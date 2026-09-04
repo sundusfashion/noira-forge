@@ -78,7 +78,7 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
 </head>
 <body>
 
-<div class="demo-bar">⚡ WEB DEMO para Ruda · Visible 24h · ¿Te gusta? <a id="demoCta" href="#" style="color:#1c1005"><b>Escríbenos por WhatsApp</b></a></div>
+<div class="demo-bar">⚡ WEB DEMO para Ruda · <span data-countdown>Visible 24h</span> · ¿Te gusta? <a id="demoCta" href="#" style="color:#1c1005"><b>Escríbenos por WhatsApp</b></a></div>
 
 <nav class="nav">
   <div class="brand">RU<span>DA</span></div>
@@ -135,6 +135,19 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
   <h2>Canido</h2>
   <p class="sub">Estamos na Praza do Cruceiro de Canido 3, Ferrol. Comercio local, productos éticos e de proximidade.</p>
   <div class="rev-track" id="revs"></div>
+</section>
+
+<section id="dudas">
+  <div class="k">PREGUNTAS DE BARRIO</div>
+  <h2>Dudas</h2>
+  <dl data-faq style="max-width:640px">
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Hacéis encargos personalizados?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">Sí, cuéntanos la idea por WhatsApp y te preparamos algo único.</dd>
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Dónde estáis?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">Praza do Cruceiro de Canido 3, Ferrol. Ven a vernos.</dd>
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Cómo encargo?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">Rellena el formulario de abajo o escríbenos directo por WhatsApp.</dd>
+  </dl>
 </section>
 
 <section id="encarga">
@@ -206,5 +219,6 @@ document.getElementById('form').onsubmit=e=>{
     .catch(()=>{document.getElementById('ok').style.display='block';btn.textContent='✓ Recibido'});
 };
 </script>
+<script src="/demo-assets/engine.js" data-slug="ruda"></script>
 </body>
 </html>

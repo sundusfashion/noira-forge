@@ -96,7 +96,7 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
 </head>
 <body>
 
-<div class="demo-bar">⚡ WEB DE EJEMPLO · Hecha por <b>Noira</b> en minutos · ¿Quieres una así para tu negocio? <b>Escríbenos</b></div>
+<div class="demo-bar">⚡ WEB DE EJEMPLO · Hecha por <b>Noira</b> en minutos · <span data-countdown>Demo permanente de portfolio</span> · <a id="demoCta" href="#" style="color:#1c1005"><b>Quiero una así</b></a></div>
 
 <nav class="nav">
   <div class="brand">CASA <span>ELENA</span></div>
@@ -152,6 +152,19 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
   <h2>Opiniones</h2>
   <p class="sub">4.8 de media en 2.300 reseñas de Google.</p>
   <div class="rev-track" id="revs"></div>
+</section>
+
+<section id="faq">
+  <div class="k">DUDAS DE BARRIO</div>
+  <h2>Preguntas</h2>
+  <dl data-faq style="max-width:640px">
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Hacéis comida para llevar?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">Sí, llama o pide desde esta web y la recoges lista.</dd>
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Hay que reservar?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">En fin de semana, sí. Entre semana suele haber sitio.</dd>
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Tenéis menú del día?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">De lunes a viernes al mediodía. Pregunta en barra por el de hoy.</dd>
+  </dl>
 </section>
 
 <section id="reservar">
@@ -224,5 +237,6 @@ document.querySelectorAll('section,.hero-inner').forEach(el=>{el.classList.add('
 // reserva demo
 document.getElementById('form').onsubmit=e=>{e.preventDefault();document.getElementById('ok').style.display='block';e.target.querySelector('button').textContent='✓ Recibida'};
 </script>
+<script src="/demo-assets/engine.js" data-slug="casa-elena"></script>
 </body>
 </html>

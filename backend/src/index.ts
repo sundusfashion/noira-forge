@@ -457,15 +457,19 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     const demoUrl = String(b.demoUrl || '').slice(0, 200);
     const sector = String(b.sector || 'negocio').slice(0, 30);
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to) || !business || !demoUrl) return json(400, { error: 'to + business + demoUrl required' });
+    let id = '';
     try {
       const { subject, body } = await composeOutreach(business, sector, demoUrl);
-      const id = marketing.queueOutreach({ to, business, subject, body });
+      id = marketing.queueOutreach({ to, business, subject, body });
       const mid = await sendEmail(to, subject, body);
       marketing.markOutreach(id, 'sent');
       core.emit('episodic', 'Outreach sent', `${business} <${to}> — "${subject}" (${mid})`, { outreachId: id }, 0.7);
       broadcast(fullState());
       return json(200, { ok: true, id, subject });
-    } catch (e: any) { return json(502, { error: e.message }); }
+    } catch (e: any) {
+      if (id) marketing.markOutreach(id, 'failed');
+      return json(502, { error: e.message });
+    }
   }
   if (url.pathname === '/api/outreach/unsub' && req.method === 'POST') {
     let b: any;

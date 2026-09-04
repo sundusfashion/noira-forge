@@ -96,7 +96,7 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
 </head>
 <body>
 
-<div class="demo-bar">⚡ WEB DE EJEMPLO · Hecha por <b>Noira</b> en minutos · ¿Quieres una así para tu negocio? <b>Escríbenos</b></div>
+<div class="demo-bar">⚡ WEB DE EJEMPLO · Hecha por <b>Noira</b> en minutos · <span data-countdown>Demo permanente de portfolio</span> · <a id="demoCta" href="#" style="color:#1c1005"><b>Quiero una así</b></a></div>
 
 <nav class="nav">
   <div class="brand">CASA <span>ELENA</span></div>
@@ -139,11 +139,12 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
   <h2>Galería</h2>
   <p class="sub">Fotos reales de nuestra parrilla y nuestro salón.</p>
   <div class="grid">
-    <img loading="lazy" src="https://images.unsplash.com/photo-1544025162-d76694265947?w=700&q=80&auto=format&fit=crop" onerror="this.onerror=null;this.src='https://picsum.photos/seed/brasa1/700/520'" alt="Costillar a la brasa">
-    <img loading="lazy" src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=700&q=80&auto=format&fit=crop" onerror="this.onerror=null;this.src='https://picsum.photos/seed/brasa2/700/520'" alt="Chuletón">
-    <img loading="lazy" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&q=80&auto=format&fit=crop" onerror="this.onerror=null;this.src='https://picsum.photos/seed/brasa3/700/520'" alt="Salón">
-    <img loading="lazy" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80&auto=format&fit=crop" onerror="this.onerror=null;this.src='https://picsum.photos/seed/brasa4/700/520'" alt="Plato">
+    <img loading="lazy" src="https://images.pexels.com/photos/18299593/pexels-photo-18299593.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Brasa">
+    <img loading="lazy" src="https://images.pexels.com/photos/18299596/pexels-photo-18299596.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Carne a la parrilla">
+    <img loading="lazy" src="https://images.pexels.com/photos/37215460/pexels-photo-37215460.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Asador">
+    <img loading="lazy" src="https://images.pexels.com/photos/18299594/pexels-photo-18299594.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Fuego y carne">
   </div>
+  <p style="color:var(--muted);font-size:11.5px;margin-top:10px;font-family:Verdana">Fotos: Pexels · En tu web real pondríamos las fotos de tu negocio</p>
 </section>
 
 <section id="opiniones">
@@ -151,6 +152,19 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
   <h2>Opiniones</h2>
   <p class="sub">4.8 de media en 2.300 reseñas de Google.</p>
   <div class="rev-track" id="revs"></div>
+</section>
+
+<section id="faq">
+  <div class="k">DUDAS DE BARRIO</div>
+  <h2>Preguntas</h2>
+  <dl data-faq style="max-width:640px">
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Hacéis comida para llevar?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">Sí, llama o pide desde esta web y la recoges lista.</dd>
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Hay que reservar?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">En fin de semana, sí. Entre semana suele haber sitio.</dd>
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold;cursor:pointer">¿Tenéis menú del día?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">De lunes a viernes al mediodía. Pregunta en barra por el de hoy.</dd>
+  </dl>
 </section>
 
 <section id="reservar">
@@ -223,5 +237,6 @@ document.querySelectorAll('section,.hero-inner').forEach(el=>{el.classList.add('
 // reserva demo
 document.getElementById('form').onsubmit=e=>{e.preventDefault();document.getElementById('ok').style.display='block';e.target.querySelector('button').textContent='✓ Recibida'};
 </script>
+<script src="/demo-assets/engine.js" data-slug="casa-elena"></script>
 </body>
 </html>

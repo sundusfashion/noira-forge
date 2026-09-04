@@ -82,11 +82,12 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
 </head>
 <body>
 
-<div class="demo-bar">⚡ WEB DEMO para Salem's Café · Visible 24h · ¿Te gusta? <a id="demoCta" href="#" style="color:#1c1005"><b>Escríbenos por WhatsApp</b></a></div>
+<div class="demo-bar">⚡ WEB DEMO para Salem's Café · <span data-countdown>Se apaga en 24h</span> · ¿Te gusta? <a id="demoCta" href="#" style="color:#1c1005"><b>Escríbenos por WhatsApp</b></a></div>
 
 <nav class="nav">
   <div class="brand">SALEM'S <span>CAFÉ</span></div>
   <div class="links"><a href="#inicio">Inicio</a><a href="#carta">Carta</a><a href="#local">Local</a><a href="#barrio">Barrio</a><a href="#pedir">Pedir</a></div>
+  <button class="tab" data-lang-btn style="margin-right:8px">GL</button>
   <a class="btn" href="#pedir">Pedir para llevar</a>
 </nav>
 
@@ -95,9 +96,10 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
     <source src="https://videos.pexels.com/video-files/33701530/14314237_960_540_24fps.mp4" type="video/mp4">
   </video>
   <div class="hero-inner">
-    <div class="open-pill open" id="openPill"><span class="dot"></span><span id="openTxt">ABIERTO AHORA</span></div>
+    <div class="open-pill open" data-open="7.5" data-close="20.5" data-open-msg="ABIERTO AHORA · PIDE SIN COLA" data-closed-msg="CERRADO · ABRIMOS 7:30"><span class="dot"></span><span data-open-txt>ABIERTO AHORA</span></div>
     <h1>Tu café de cada día,<br><span class="cafe">en Venezuela 69.</span></h1>
-    <p>Desayunos con bollería, café para llevar, pinchos y tés. El bar de barrio que te llama por tu nombre. Pide sin llamar.</p>
+    <p data-es="Desayunos con bollería, café para llevar, pinchos y tés. El bar de barrio que te llama por tu nombre. Pide sin llamar." data-gl="Almorzos con bolaría, café para levar, pinchos e tés. O bar de barrio que te chama polo teu nome. Pide sen chamar.">Desayunos con bollería, café para llevar, pinchos y tés. El bar de barrio que te llama por tu nombre. Pide sin llamar.</p>
+    <p style="font-size:13px;color:var(--muted)"><span data-greet>Buenas</span>, ¿qué te apetece hoy?</p>
     <div class="cta-row">
       <a class="btn" href="#carta">Ver la carta</a>
       <a class="btn ghost" href="#pedir">Pedir para llevar</a>
@@ -113,11 +115,11 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
 <section id="carta">
   <div class="k">DESAYUNOS · CAFÉS · PINCHOS</div>
   <h2>La carta</h2>
-  <p class="sub">Lo de siempre, bien hecho. Toca cada pestaña.</p>
+  <p class="sub" data-hours-menu data-morning="Por la mañana: desayunos hasta las 12:30. Toca cada pestaña." data-lunch="A esta hora: cafés y pinchos. Por la mañana, desayunos hasta las 12:30.">Lo de siempre, bien hecho. Toca cada pestaña.</p>
   <div class="tabs">
-    <button class="tab on" data-t="d">Desayunos</button>
-    <button class="tab" data-t="c">Cafés</button>
-    <button class="tab" data-t="p">Pinchos</button>
+    <button class="tab on" data-t="d" data-tab="d">Desayunos</button>
+    <button class="tab" data-t="c" data-tab="c">Cafés</button>
+    <button class="tab" data-t="p" data-tab="p">Pinchos</button>
   </div>
   <div id="platos"></div>
   <p style="color:var(--muted);font-size:11.5px;margin-top:10px;font-family:Verdana">Precios orientativos · Los fijamos juntos con tu carta real</p>
@@ -143,17 +145,30 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
   <div class="rev-track" id="revs"></div>
 </section>
 
+<section id="faq">
+  <div class="k">DUDAS DE BARRIO</div>
+  <h2>Preguntas</h2>
+  <dl data-faq style="max-width:640px">
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold">¿Hacéis café para llevar?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">Sí, en vaso y listo en 2 minutos si lo pides desde esta web.</dd>
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold">¿Puedo reservar mesa?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">Somos bar de barra y trato rápido, pero escríbenos y te guardamos sitio para grupos.</dd>
+    <dt style="padding:12px 0;border-bottom:1px solid var(--line);font-weight:bold">¿Dónde estáis?</dt>
+    <dd style="padding:4px 0 14px;color:var(--muted)">Venezuela 69 Bajo, Ferrol. Al lado de Ultramar.</dd>
+  </dl>
+</section>
+
 <section id="pedir">
   <div class="k">SIN LLAMAR, SIN COLA</div>
   <h2>Pide para llevar</h2>
   <p class="sub">Lo pides aquí y lo recoges listo. Te avisamos por WhatsApp.</p>
   <div class="book">
-    <form id="form">
-      <div><label>Nombre</label><input required placeholder="Sabela López"></div>
-      <div><label>Teléfono / WhatsApp</label><input required placeholder="600 123 456"></div>
-      <div><label>Tu pedido</label><select><option>Desayuno completo</option><option>Café + pincho</option><option>Para llevar (varios)</option><option>Solo café</option></select></div>
+    <form id="form" data-lead>
+      <div><label>Nombre</label><input name="nombre" required placeholder="Sabela López"></div>
+      <div><label>Teléfono / WhatsApp</label><input name="telefono" required placeholder="600 123 456"></div>
+      <div><label>Tu pedido</label><select name="personas"><option>Desayuno completo</option><option>Café + pincho</option><option>Para llevar (varios)</option><option>Solo café</option></select></div>
       <button class="btn" type="submit">Pedir ahora</button>
-      <div class="ok" id="ok">✓ ¡Pedido recibido! Te avisamos por WhatsApp cuando esté listo.</div>
+      <div class="ok" id="ok" data-lead-ok>✓ ¡Pedido recibido! Te avisamos por WhatsApp cuando esté listo.</div>
     </form>
     <div class="hours">
       <h3>Salem's Café</h3>
@@ -169,44 +184,21 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
 <footer>Salem's Café · Venezuela 69, Ferrol · 690 939 061 · Demo de Noira · Visible 24h, luego se apaga sola</footer>
 <a class="wa" id="waFloat" href="#" aria-label="WhatsApp">✆</a>
 
+<script src="/demo-assets/engine.js" data-slug="salem"></script>
+<script src="/demo-assets/engine.js" data-slug="salem"></script>
 <script>
-// abierto/cerrado inteligente (orientativo 7:30-20:30)
-(function(){const h=new Date().getHours(),m=new Date().getMinutes(),t=h+m/60,open=t>=7.5&&t<20.5;
-const p=document.getElementById('openPill');p.classList.remove('open','closed');p.classList.add(open?'open':'closed');
-document.getElementById('openTxt').textContent=open?'ABIERTO AHORA · PIDE SIN COLA':'CERRADO · ABRIMOS 7:30'})();
-// carta
+// carta (pintada por pestaña; el motor la llama)
+window.__paintTab=paint;
 const CARTA={d:[["Desayuno completo","Café + tostada + zumo","4,50 €"],["Tostada con tomate","Pan del día, AOVE","2,80 €"],["Bollería","Croissant, napolitana, ensaimada","desde 1,50 €"],["Chocolate con churros","De fin de semana","4,00 €"]],
 c:[["Café con leche","El de siempre, bien tirado","1,60 €"],["Capuchino","Con cacao","2,20 €"],["Té e infusiones","Carta completa","2,00 €"],["Para llevar","Tu café en vaso, +0,20 €","—"]],
 p:[["Pincho de tortilla","La de verdad","2,50 €"],["Pincho del día","Pregunta en barra","2,80 €"],["Bocata pequeño","Jamón, queso, vegetal","3,50 €"],["Empanada","Porción generosa","3,00 €"]]};
 const box=document.getElementById('platos');
 function paint(t){box.innerHTML=CARTA[t].map((d,i)=>`<div class="dish" style="animation-delay:${i*70}ms"><div><h4>${d[0]}</h4><p>${d[1]}</p></div><div class="price">${d[2]}</div></div>`).join('')}
 paint('d');
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');paint(b.dataset.t)});
 // barrio
 const OPS=[["☕","Desayunos con bollería y café para llevar","Cada mañana"],["🥖","Pinchos que vuelan a mediodía","De barrio"],["★","El café de Venezuela 69","Ferrol"]];
 document.getElementById('revs').innerHTML=OPS.map(o=>`<div class="rev"><div class="stars">${o[0]}</div><p>"${o[1]}"</p><b>${o[2]}</b></div>`).join('');
-// reveals
-const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}}),{threshold:.12});
-document.querySelectorAll('section,.hero-inner').forEach(el=>{el.classList.add('reveal');io2.observe(el)});
-// pedido real + whatsapp nuestro
-const SLUG='salem';
-fetch('/api/demos/'+SLUG).then(r=>r.json()).then(cfg=>{
-  if(cfg.ownerPhone){
-    const url='https://wa.me/'+cfg.ownerPhone+'?text='+encodeURIComponent(cfg.waText||'Hola, me interesa la web demo');
-    document.getElementById('demoCta').href=url;
-    document.getElementById('waFloat').href=url;
-  }
-}).catch(()=>{});
-document.getElementById('form').onsubmit=e=>{
-  e.preventDefault();
-  const f=e.target,btn=f.querySelector('button');
-  const data={slug:SLUG,nombre:f.querySelector('input').value,telefono:f.querySelectorAll('input')[1].value,
-    dia:'',personas:f.querySelector('select').value};
-  btn.textContent='Enviando…';
-  fetch('/api/demo-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
-    .then(r=>{if(!r.ok)throw 0;document.getElementById('ok').style.display='block';btn.textContent='✓ Pedido hecho'})
-    .catch(()=>{document.getElementById('ok').style.display='block';btn.textContent='✓ Pedido hecho'});
-};
+// pedido + whatsapp los gestiona el motor (data-lead, #demoCta, #waFloat)
 </script>
 </body>
 </html>
