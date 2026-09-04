@@ -230,6 +230,10 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   if (url.pathname === '/api/blog' && req.method === 'GET') {
     return json(200, { articles: marketing.list('published', 50) });
   }
+  if (url.pathname === '/api/outreach' && req.method === 'GET') {
+    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
+    return json(200, { stats: marketing.outreachStats(), recent: marketing.listOutreach(undefined, 30) });
+  }
   // Demo config: the demo page fetches this to wire OUR WhatsApp + prefilled text.
   if (url.pathname.startsWith('/api/demos/') && req.method === 'GET') {
     const slug = decodeURIComponent(url.pathname.slice('/api/demos/'.length).split('/')[0]);
@@ -462,10 +466,6 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       broadcast(fullState());
       return json(200, { ok: true, id, subject });
     } catch (e: any) { return json(502, { error: e.message }); }
-  }
-  if (url.pathname === '/api/outreach' && req.method === 'GET') {
-    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
-    return json(200, { stats: marketing.outreachStats(), recent: marketing.listOutreach(undefined, 30) });
   }
   if (url.pathname === '/api/outreach/unsub' && req.method === 'POST') {
     let b: any;
