@@ -21,9 +21,15 @@ function broadcast(msg: any) {
 }
 core.onEvent((evt) => broadcast({ type: 'memory_event', event: evt }));
 
+const AUTONOMY_MODE = process.env.AUTONOMY_MODE || 'assisted'; // assisted = proposes, waits · full = acts alone within caps
+let lastAutoSpawn = 0;
+const MAX_AUTO_ENTITIES = 10;
+const AUTO_SPAWN_COOLDOWN_MS = 20 * 3600_000;
+
 function fullState() {
   return {
     type: 'state_update',
+    autonomyMode: AUTONOMY_MODE,
     ...core.snapshot(),
     memory: mem.recent(80).reverse(),
     memoryCount: mem.count(),
@@ -280,7 +286,37 @@ server.listen(PORT, () => {
   // dream cycle: every 6h the entity dreams alone, no human needed
   setInterval(async () => {
     if (core.mode === 'dreaming') return;
-    try { await core.dream(300); broadcast(fullState()); }
+    try {
+      const d = await core.dream(300);
+      broadcast(fullState());
+      if (AUTONOMY_MODE === 'full') await autoSpawnAttempt(d);
+    }
     catch (e) { console.error('[dream]', e); }
   }, 6 * 3600_000);
+
+async function autoSpawnAttempt(dreamResult: any) {
+  try {
+    if (legal.list().length >= MAX_AUTO_ENTITIES) return;
+    if (Date.now() - lastAutoSpawn < AUTO_SPAWN_COOLDOWN_MS) return;
+    if ((dreamResult?.probSuccess ?? 0) < 0.5) {
+      core.emit('decision', 'Autonomy: holding', `Dream confidence ${(dreamResult?.probSuccess ?? 0).toFixed(2)} below threshold — no spawn. Patience is also a decision.`, {}, 0.5);
+      return;
+    }
+    const r = await hiring.postAndExecute(
+      'strategist',
+      'Propose ONE micro-SaaS subsidiary for Noira Forge. Reply with ONLY JSON: {"name":"...","purpose":"one sentence","capitalEUR":100-1000}. Realistic, boring, profitable niche. No crypto, no hype.',
+      25
+    );
+    const m = String(r.output).match(/\{[\s\S]*\}/);
+    if (!m) { core.emit('decision', 'Autonomy: unclear vision', 'Strategist reply was not parseable — skipping spawn.', {}, 0.4); return; }
+    const spec = JSON.parse(m[0]);
+    const name = String(spec.name || '').slice(0, 60);
+    if (!name) return;
+    const capitalCents = Math.min(100000, Math.max(10000, Math.round(Number(spec.capitalEUR || 200) * 100)));
+    const e = await legal.incorporate({ name, purpose: String(spec.purpose || 'autonomous subsidiary').slice(0, 300), capitalCents });
+    lastAutoSpawn = Date.now();
+    core.emit('decision', `Autonomous birth: ${e.name}`, `I dreamed, I decided, I acted — no human involved. Capital $${(capitalCents / 100).toFixed(0)}. ${e.deployUrl}`, { entity: e }, 1.0);
+    broadcast(fullState());
+  } catch (e) { console.error('[autonomy]', e); }
+}
 });
