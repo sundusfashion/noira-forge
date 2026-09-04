@@ -33,6 +33,8 @@ export async function findLeads(lat: number, lon: number, radiusM = 1000, limit 
   const q = `[out:json][timeout:25];(node["shop"](around:${radiusM},${lat},${lon});node["amenity"~"^(restaurant|cafe|fast_food|bar|hairdresser|beauty|dentist|doctors|clinic|pharmacy|veterinary|car_repair|car_wash)$"](around:${radiusM},${lat},${lon}););out tags center ${limit};`;
   let lastErr = 'unreachable';
   for (const m of MIRRORS) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 20000);
     try {
       const r = await fetch(m, {
         method: 'POST',
@@ -42,11 +44,13 @@ export async function findLeads(lat: number, lon: number, radiusM = 1000, limit 
           'User-Agent': 'NoiraForge/1.0 (lead radar)',
         },
         body: 'data=' + encodeURIComponent(q),
+        signal: ctl.signal,
       });
+      clearTimeout(timer);
       if (!r.ok) { lastErr = `overpass ${r.status}`; continue; }
       const j: any = await r.json();
       return normalize(j, limit);
-    } catch (e: any) { lastErr = e.message || String(e); }
+    } catch (e: any) { clearTimeout(timer); lastErr = e.name === 'AbortError' ? 'overpass timeout' : (e.message || String(e)); }
   }
   throw new Error(lastErr);
 }
