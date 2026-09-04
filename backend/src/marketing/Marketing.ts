@@ -23,6 +23,13 @@ export class MarketingStore {
         published_at INTEGER, external_url TEXT, error TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_art_status ON articles(status);
+      CREATE TABLE IF NOT EXISTS outreach (
+        id TEXT PRIMARY KEY, to_email TEXT NOT NULL, business TEXT NOT NULL,
+        subject TEXT NOT NULL, body TEXT NOT NULL, status TEXT DEFAULT 'queued',
+        sent_at INTEGER, reply_at INTEGER, reply_snippet TEXT DEFAULT '',
+        followups INTEGER DEFAULT 0, created_at INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_out_status ON outreach(status);
       CREATE TABLE IF NOT EXISTS demo_leads (
         id TEXT PRIMARY KEY, demo_slug TEXT NOT NULL, nombre TEXT NOT NULL,
         telefono TEXT NOT NULL, dia TEXT DEFAULT '', personas TEXT DEFAULT '',
@@ -55,6 +62,33 @@ export class MarketingStore {
 
   listLeads(limit = 100): any[] {
     return this.db.prepare(`SELECT * FROM demo_leads ORDER BY created_at DESC LIMIT ?`).all(limit);
+  }
+
+  queueOutreach(o: { to: string; business: string; subject: string; body: string }): string {
+    const id = `out_${Date.now()}_${nanoid(4)}`;
+    this.db.prepare(`INSERT INTO outreach (id, to_email, business, subject, body, status, created_at) VALUES (?,?,?,?,?,?,?)`)
+      .run(id, o.to, o.business, o.subject, o.body, 'queued', Date.now());
+    return id;
+  }
+  markOutreach(id: string, status: string, extra: { replySnippet?: string; followups?: number } = {}) {
+    const cur: any = this.db.prepare(`SELECT * FROM outreach WHERE id=?`).get(id);
+    if (!cur) return;
+    this.db.prepare(`UPDATE outreach SET status=?, sent_at=COALESCE(sent_at,?), reply_at=?, reply_snippet=?, followups=? WHERE id=?`)
+      .run(status, status === 'sent' ? Date.now() : cur.sent_at,
+        status === 'replied' ? Date.now() : cur.reply_at,
+        extra.replySnippet ?? cur.reply_snippet ?? '',
+        extra.followups ?? cur.followups ?? 0, id);
+  }
+  listOutreach(status?: string, limit = 100): any[] {
+    return status
+      ? this.db.prepare(`SELECT * FROM outreach WHERE status=? ORDER BY created_at DESC LIMIT ?`).all(status, limit)
+      : this.db.prepare(`SELECT * FROM outreach ORDER BY created_at DESC LIMIT ?`).all(limit);
+  }
+  outreachStats(): Record<string, number> {
+    const rows: any[] = this.db.prepare(`SELECT status, COUNT(*) as c FROM outreach GROUP BY status`).all();
+    const out: Record<string, number> = {};
+    for (const r of rows) out[r.status] = r.c;
+    return out;
   }
 
   get(id: string): Article | null {

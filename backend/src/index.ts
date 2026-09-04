@@ -122,6 +122,26 @@ import { MarketingStore, mdToHtml } from './marketing/Marketing.js';
 import { getDemo, ensureShowcase, createDemo, isExpired, expiredPage } from './demos/Demos.js';
 import { searchPhotos, searchVideos } from './media/Pexels.js';
 import { findLeadsCached, loadCache, saveCache } from './leads/Leads.js';
+import { sendEmail, checkInbox } from './outreach/Mailer.js';
+
+function outreachTemplate(business: string, demoUrl: string): { subject: string; body: string } {
+  return {
+    subject: `Una web de regalo para ${business}`,
+    body: `Hola, soy Noira. Vi ${business} y me gustó lo que hacéis. Os he preparado una web de regalo para que la veáis:\n${demoUrl}\n\nEstá visible 24h. Si os gusta, os la dejo con un dominio bonito y mantenimiento mensual de todo. Os apetece que os la enseñe?\n\nUn saludo,\nNoira\n\nSi no queréis más correos, responded "baja" y no volvemos a escribir.`,
+  };
+}
+
+async function composeOutreach(business: string, sector: string, demoUrl: string): Promise<{ subject: string; body: string }> {
+  const fallback = outreachTemplate(business, demoUrl);
+  try {
+    const r = await hiring.postAndExecute('copywriter',
+      `Escribe un email comercial en español (sin emojis, sin precios) para ${business} (${sector}). Incluye su demo: ${demoUrl} (visible 24h). Tono amable, indirecto, 120 palabras max. Primera línea: "Asunto: ..." y luego el cuerpo. Termina ofreciendo enseñarla y con firma "Noira".`, 25);
+    const text = String(r.output);
+    const subject = (text.match(/Asunto:\s*(.+)/i)?.[1] || fallback.subject).slice(0, 120);
+    const body = text.replace(/Asunto:.*\n/i, '').trim().slice(0, 2000) || fallback.body;
+    return { subject, body };
+  } catch { return fallback; }
+}
 
 ensureShowcase('casa-elena', 'Asador Casa Elena');
 
@@ -424,6 +444,41 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       return json(200, { ok: true, imported: clean.length, cached: loadCache().leads.length });
     } catch { return json(400, { error: 'invalid JSON' }); }
   }
+  if (url.pathname === '/api/outreach/send' && req.method === 'POST') {
+    // Compose (LLM) + send (Gmail) + track. Human pace enforced by caller.
+    let b: any;
+    try { b = JSON.parse(raw || '{}'); } catch { return json(400, { error: 'invalid JSON' }); }
+    const to = String(b.to || '').trim().toLowerCase().slice(0, 120);
+    const business = String(b.business || '').slice(0, 80);
+    const demoUrl = String(b.demoUrl || '').slice(0, 200);
+    const sector = String(b.sector || 'negocio').slice(0, 30);
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to) || !business || !demoUrl) return json(400, { error: 'to + business + demoUrl required' });
+    try {
+      const { subject, body } = await composeOutreach(business, sector, demoUrl);
+      const id = marketing.queueOutreach({ to, business, subject, body });
+      const mid = await sendEmail(to, subject, body);
+      marketing.markOutreach(id, 'sent');
+      core.emit('episodic', 'Outreach sent', `${business} <${to}> — "${subject}" (${mid})`, { outreachId: id }, 0.7);
+      broadcast(fullState());
+      return json(200, { ok: true, id, subject });
+    } catch (e: any) { return json(502, { error: e.message }); }
+  }
+  if (url.pathname === '/api/outreach' && req.method === 'GET') {
+    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
+    return json(200, { stats: marketing.outreachStats(), recent: marketing.listOutreach(undefined, 30) });
+  }
+  if (url.pathname === '/api/outreach/unsub' && req.method === 'POST') {
+    let b: any;
+    try { b = JSON.parse(raw || '{}'); } catch { return json(400, { error: 'invalid JSON' }); }
+    const email = String(b.email || '').trim().toLowerCase();
+    let n = 0;
+    for (const o of marketing.listOutreach(undefined, 500)) {
+      if ((o.to_email || '').toLowerCase() === email && (o.status === 'queued' || o.status === 'sent')) {
+        marketing.markOutreach(o.id, 'unsub'); n++;
+      }
+    }
+    return json(200, { ok: true, suppressed: n });
+  }
   if (url.pathname === '/api/restore' && req.method === 'POST') {
     // Re-upload a mind after a cloud restart wiped the ephemeral disk.
     const token = process.env.BACKUP_TOKEN;
@@ -490,6 +545,34 @@ server.listen(PORT, () => {
       catch (e) { console.error('[snapshot]', e); }
     } catch (e) { console.error('[prune]', e); }
   }, 3600_000);
+  // outreach cycle: daily inbox read (replies) + one gentle follow-up per silent lead.
+  setInterval(async () => {
+    try {
+      const inbox = await checkInbox(14);
+      for (const m of inbox) {
+        const cands = marketing.listOutreach(undefined, 500).filter(o => (o.to_email || '').toLowerCase() === m.from && o.status !== 'replied' && o.status !== 'unsub');
+        if (!cands.length) continue;
+        const body = `${m.subject}\n${m.snippet}`.toLowerCase();
+        if (/baja|no me (escribas|envies)|unsuscrib|eliminar/.test(body)) {
+          for (const c of cands) marketing.markOutreach(c.id, 'unsub');
+          core.emit('episodic', 'Outreach opt-out', `${m.from} pidió baja — suprimido para siempre.`, {}, 0.6);
+        } else {
+          for (const c of cands) marketing.markOutreach(c.id, 'replied', { replySnippet: m.snippet.slice(0, 300) });
+          core.emit('episodic', 'Outreach reply!', `${m.from} contestó: "${m.snippet.slice(0, 160)}"`, {}, 0.95);
+        }
+      }
+      // follow-ups: silent >72h, max one, max 5/day
+      const now = Date.now();
+      const due = marketing.listOutreach('sent', 200).filter(o => o.sent_at && now - o.sent_at > 72 * 3600_000 && (o.followups || 0) === 0).slice(0, 5);
+      for (const o of due) {
+        const body = `Hola de nuevo, soy Noira. Te escribí hace unos días con una web de regalo para ${o.business} (se apaga pronto). La recupero 24h más si te apetece verla? Responde sí y te la enseño.\n\nUn saludo,\nNoira`;
+        await sendEmail(o.to_email, `Re: ${o.subject}`, body);
+        marketing.markOutreach(o.id, 'sent', { followups: 1 });
+        core.emit('episodic', 'Follow-up sent', `${o.business} <${o.to_email}>`, {}, 0.6);
+      }
+      if (inbox.length || due.length) broadcast(fullState());
+    } catch (e) { console.error('[outreach]', (e as any)?.message || e); }
+  }, 24 * 3600_000);
   // marketing cycle: every 24h the entity writes one article alone (client magnet)
   setInterval(async () => {
     try {
