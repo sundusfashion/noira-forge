@@ -23,15 +23,35 @@ export function sectorOf(tags: Record<string, string>): string {
   return 'negocio';
 }
 
+const MIRRORS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.nchc.org.tw/api/interpreter',
+];
+
 export async function findLeads(lat: number, lon: number, radiusM = 1000, limit = 30): Promise<Lead[]> {
   const q = `[out:json][timeout:25];(node["shop"](around:${radiusM},${lat},${lon});node["amenity"~"^(restaurant|cafe|fast_food|bar|hairdresser|beauty|dentist|doctors|clinic|pharmacy|veterinary|car_repair|car_wash)$"](around:${radiusM},${lat},${lon}););out tags center ${limit};`;
-  const r = await fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'data=' + encodeURIComponent(q),
-  });
-  if (!r.ok) throw new Error(`overpass ${r.status}`);
-  const j: any = await r.json();
+  let lastErr = 'unreachable';
+  for (const m of MIRRORS) {
+    try {
+      const r = await fetch(m, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
+          'User-Agent': 'NoiraForge/1.0 (lead radar)',
+        },
+        body: 'data=' + encodeURIComponent(q),
+      });
+      if (!r.ok) { lastErr = `overpass ${r.status}`; continue; }
+      const j: any = await r.json();
+      return normalize(j, limit);
+    } catch (e: any) { lastErr = e.message || String(e); }
+  }
+  throw new Error(lastErr);
+}
+
+function normalize(j: any, limit: number): Lead[] {
   const out: Lead[] = [];
   for (const el of j.elements || []) {
     const tags = el.tags || {};
