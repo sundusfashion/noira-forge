@@ -210,6 +210,15 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   if (url.pathname === '/api/blog' && req.method === 'GET') {
     return json(200, { articles: marketing.list('published', 50) });
   }
+  // Demo config: the demo page fetches this to wire OUR WhatsApp + prefilled text.
+  if (url.pathname.startsWith('/api/demos/') && req.method === 'GET') {
+    const slug = decodeURIComponent(url.pathname.slice('/api/demos/'.length).split('/')[0]);
+    const rec = getDemo(slug);
+    if (!rec) return json(404, { error: 'demo not found' });
+    const owner = process.env.OUR_WHATSAPP || '';
+    const waText = `Hola, he visto la web demo que me preparasteis para ${rec.business} y me interesa. Me contais mas?`;
+    return json(200, { business: rec.business, expiresAt: rec.expiresAt, ownerPhone: owner, waText });
+  }
   // Real business finder (OpenStreetMap, free): the agency's lead radar.
   if (url.pathname === '/api/leads' && req.method === 'GET') {
     if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
@@ -372,6 +381,19 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       marketing.mark(a.id, 'failed', '', e.message);
       return json(502, { error: e.message });
     }
+  }
+  if (url.pathname === '/api/demo-lead' && req.method === 'POST') {
+    // Reservation/lead from a demo page → stored for us, client does nothing else.
+    let b: any;
+    try { b = JSON.parse(raw || '{}'); } catch { return json(400, { error: 'invalid JSON' }); }
+    const nombre = String(b.nombre || '').trim().slice(0, 60);
+    const telefono = String(b.telefono || '').trim().slice(0, 30);
+    const slug = String(b.slug || '').slice(0, 40);
+    if (nombre.length < 2 || telefono.replace(/\D/g, '').length < 6) return json(400, { error: 'nombre + telefono validos' });
+    const id = marketing.addLead({ demoSlug: slug, nombre, telefono, dia: String(b.dia || '').slice(0, 20), personas: String(b.personas || '').slice(0, 10) });
+    core.emit('episodic', 'Demo lead', `${nombre} (${telefono}) pide mesa via demo ${slug}`, { leadId: id }, 0.85);
+    broadcast(fullState());
+    return json(200, { ok: true });
   }
   if (url.pathname === '/api/demos' && req.method === 'POST') {
     // Register a client demo with real expiry (used by the generator + WhatsApp outreach).

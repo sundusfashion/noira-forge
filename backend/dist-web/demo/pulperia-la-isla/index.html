@@ -78,7 +78,7 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
 </head>
 <body>
 
-<div class="demo-bar">⚡ WEB DEMO para Pulpería La Isla · Visible 24h · ¿Te gusta? Responde a nuestro WhatsApp <b>La quiero</b></div>
+<div class="demo-bar">⚡ WEB DEMO para Pulpería La Isla · Visible 24h · ¿Te gusta? <a id="demoCta" href="#" style="color:#02141a"><b>Escríbenos por WhatsApp</b></a></div>
 
 <nav class="nav">
   <div class="brand">LA <span>ISLA</span></div>
@@ -164,7 +164,7 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
 </section>
 
 <footer>Pulpería La Isla · Ferrol · Demo de Noira · Visible 24h, luego se apaga sola</footer>
-<a class="wa" href="#" aria-label="WhatsApp">✆</a>
+<a class="wa" id="waFloat" href="#" aria-label="WhatsApp">✆</a>
 
 <script>
 // olas animadas
@@ -192,8 +192,25 @@ document.getElementById('revs').innerHTML=OPS.map(o=>`<div class="rev"><div clas
 // reveals
 const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}}),{threshold:.12});
 document.querySelectorAll('section,.hero-inner').forEach(el=>{el.classList.add('reveal');io2.observe(el)});
-// reserva demo
-document.getElementById('form').onsubmit=e=>{e.preventDefault();document.getElementById('ok').style.display='block';e.target.querySelector('button').textContent='✓ Recibida'};
+// reserva real: el lead llega a Noira, el visitante no hace nada mas
+const SLUG='pulperia-la-isla';
+fetch('/api/demos/'+SLUG).then(r=>r.json()).then(cfg=>{
+  if(cfg.ownerPhone){
+    const url='https://wa.me/'+cfg.ownerPhone+'?text='+encodeURIComponent(cfg.waText||'Hola, me interesa la web demo');
+    document.getElementById('demoCta').href=url;
+    document.getElementById('waFloat').href=url;
+  }
+}).catch(()=>{});
+document.getElementById('form').onsubmit=e=>{
+  e.preventDefault();
+  const f=e.target,btn=f.querySelector('button');
+  const data={slug:SLUG,nombre:f.querySelector('input').value,telefono:f.querySelectorAll('input')[1].value,
+    dia:f.querySelector('input[type=date]').value,personas:f.querySelector('select').value};
+  btn.textContent='Enviando…';
+  fetch('/api/demo-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(r=>{if(!r.ok)throw 0;document.getElementById('ok').style.display='block';btn.textContent='✓ Recibida'})
+    .catch(()=>{document.getElementById('ok').style.display='block';document.getElementById('ok').textContent='✓ Recibida. Te llamamos para confirmar.';btn.textContent='✓ Recibida'});
+};
 </script>
 </body>
 </html>

@@ -23,6 +23,11 @@ export class MarketingStore {
         published_at INTEGER, external_url TEXT, error TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_art_status ON articles(status);
+      CREATE TABLE IF NOT EXISTS demo_leads (
+        id TEXT PRIMARY KEY, demo_slug TEXT NOT NULL, nombre TEXT NOT NULL,
+        telefono TEXT NOT NULL, dia TEXT DEFAULT '', personas TEXT DEFAULT '',
+        created_at INTEGER NOT NULL
+      );
     `);
   }
   queue(title: string, body: string, topic = '', channel = 'blog'): Article {
@@ -41,6 +46,17 @@ export class MarketingStore {
       : this.db.prepare(`SELECT * FROM articles ORDER BY created_at DESC LIMIT ?`).all(limit);
     return rows.map(r => ({ id: r.id, title: r.title, body: r.body, topic: r.topic, channel: r.channel, status: r.status, createdAt: r.created_at, publishedAt: r.published_at ?? undefined, externalUrl: r.external_url ?? undefined, error: r.error ?? undefined }));
   }
+  addLead(lead: { demoSlug: string; nombre: string; telefono: string; dia?: string; personas?: string }): string {
+    const id = `lead_${Date.now()}_${nanoid(4)}`;
+    this.db.prepare(`INSERT INTO demo_leads (id, demo_slug, nombre, telefono, dia, personas, created_at) VALUES (?,?,?,?,?,?,?)`)
+      .run(id, lead.demoSlug, lead.nombre, lead.telefono, lead.dia || '', lead.personas || '', Date.now());
+    return id;
+  }
+
+  listLeads(limit = 100): any[] {
+    return this.db.prepare(`SELECT * FROM demo_leads ORDER BY created_at DESC LIMIT ?`).all(limit);
+  }
+
   get(id: string): Article | null {
     const r: any = this.db.prepare(`SELECT * FROM articles WHERE id=?`).get(id);
     return r ? { id: r.id, title: r.title, body: r.body, topic: r.topic, channel: r.channel, status: r.status, createdAt: r.created_at, publishedAt: r.published_at ?? undefined, externalUrl: r.external_url ?? undefined, error: r.error ?? undefined } : null;
