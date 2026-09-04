@@ -23,11 +23,46 @@ export function sectorOf(tags: Record<string, string>): string {
   return 'negocio';
 }
 
+import fs from 'node:fs';
+
 const MIRRORS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
   'https://overpass.nchc.org.tw/api/interpreter',
 ];
+
+const CACHE_FILE = './data/leads-cache.json';
+
+export function loadCache(): { updatedAt: number; leads: Lead[] } {
+  try {
+    const c = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+    if (Array.isArray(c.leads)) return { updatedAt: c.updatedAt || 0, leads: c.leads };
+  } catch {}
+  return { updatedAt: 0, leads: [] };
+}
+
+export function saveCache(leads: Lead[]) {
+  try {
+    fs.mkdirSync('./data', { recursive: true });
+    fs.writeFileSync(CACHE_FILE, JSON.stringify({ updatedAt: Date.now(), leads: leads.slice(0, 500) }));
+  } catch {}
+}
+
+// Cache-first: live radar when Overpass answers, stale cache when datacenters are filtered.
+// Never 502s if we have ever seen leads.
+export async function findLeadsCached(lat: number, lon: number, radiusM = 1000, limit = 30): Promise<{ leads: Lead[]; stale: boolean }> {
+  try {
+    const live = await findLeads(lat, lon, radiusM, limit);
+    if (live.length > 0) {
+      const cache = loadCache();
+      const merged = [...live, ...cache.leads.filter(c => !live.some(l => l.name === c.name))].slice(0, 500);
+      saveCache(merged);
+      return { leads: live, stale: false };
+    }
+  } catch {}
+  const cache = loadCache();
+  return { leads: cache.leads.slice(0, limit), stale: true };
+}
 
 export async function findLeads(lat: number, lon: number, radiusM = 1000, limit = 30): Promise<Lead[]> {
   const q = `[out:json][timeout:25];(node["shop"](around:${radiusM},${lat},${lon});node["amenity"~"^(restaurant|cafe|fast_food|bar|hairdresser|beauty|dentist|doctors|clinic|pharmacy|veterinary|car_repair|car_wash)$"](around:${radiusM},${lat},${lon}););out tags center ${limit};`;
