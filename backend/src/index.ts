@@ -195,6 +195,22 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       return json(200, { clientSecret: pi.client_secret, amountCents: v.data.amountCents });
     } catch (e: any) { return json(502, { error: `stripe: ${e.message}` }); }
   }
+  if (url.pathname === '/api/stripe' && req.method === 'POST') {
+    // Real money in: Stripe card payment → revenue recorded → neuron fires → clients update.
+    const secret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!fin.stripe || !secret) return json(501, { error: 'webhooks not configured yet' });
+    try {
+      const sig = req.headers['stripe-signature'] as string;
+      const evt = fin.stripe.webhooks.constructEvent(raw, sig, secret);
+      if (evt.type === 'payment_intent.succeeded') {
+        const pi = evt.data.object as any;
+        const cents = Number(pi.amount_received || pi.amount || 0);
+        fin.recordRevenue(cents, `Stripe card payment ${pi.id} (${(cents / 100).toFixed(2)} ${String(pi.currency || 'usd').toUpperCase()})`, { paymentIntent: pi.id });
+        broadcast(fullState());
+      }
+      return json(200, { received: true });
+    } catch (e: any) { return json(400, { error: `webhook: ${e.message}` }); }
+  }
   if (url.pathname === '/api/restore' && req.method === 'POST') {
     // Re-upload a mind after a cloud restart wiped the ephemeral disk.
     const token = process.env.BACKUP_TOKEN;

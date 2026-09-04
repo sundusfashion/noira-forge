@@ -1,0 +1,13 @@
+# Keeps the free Render entity awake (pings /health every 10 min).
+# Free, no extra accounts. Manual run: Actions → keepalive → Run workflow.
+name: keepalive
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake Noira
+        run: curl -fsS https://noira-forge-entity.onrender.com/health
