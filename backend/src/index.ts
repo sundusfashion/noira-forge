@@ -15,9 +15,13 @@ function serveWeb(urlPath: string, res: ServerResponse): boolean {
   try {
     let rel = decodeURIComponent(urlPath.split('?')[0]);
     if (rel === '/' || rel === '') rel = '/index.html';
-    const abs = path.normalize(path.join(WEB_DIR, rel));
+    let abs = path.normalize(path.join(WEB_DIR, rel));
     if (!abs.startsWith(WEB_DIR)) return false;
-    if (!fs.existsSync(abs) || fs.statSync(abs).isDirectory()) return false;
+    if (!fs.existsSync(abs)) return false;
+    if (fs.statSync(abs).isDirectory()) {
+      abs = path.join(abs, 'index.html');
+      if (!fs.existsSync(abs)) return false;
+    }
     const ext = path.extname(abs).toLowerCase();
     res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': 'public, max-age=3600' });
     fs.createReadStream(abs).pipe(res);
