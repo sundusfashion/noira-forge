@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asador Casa Elena — Brasa de verdad en tu barrio</title>
+<meta name="description" content="Asador Casa Elena: carnes a la brasa, menú del día y reservas online.">
+<style>
+:root{
+  --bg:#0c0705; --coal:#140d08; --ember:#ff7a1a; --gold:#e8b64c; --cream:#f7ead7;
+  --muted:#b9a48c; --line:rgba(255,255,255,.1);
+  --font-d:'Syne',Verdana,sans-serif; --font-b:Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-b);overflow-x:hidden}
+a{color:inherit}
+/* demo banner */
+.demo-bar{position:sticky;top:0;z-index:60;background:linear-gradient(90deg,#7a4d0f,#e8b64c,#7a4d0f);color:#1c1005;
+  text-align:center;font-family:Verdana,sans-serif;font-size:12.5px;font-weight:bold;letter-spacing:.4px;padding:10px 14px}
+.demo-bar b{background:#1c1005;color:#ffe9b0;padding:2px 10px;border-radius:20px;margin-left:8px}
+/* nav */
+.nav{position:sticky;top:41px;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:14px 26px;background:rgba(12,7,5,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--font-d);font-weight:800;font-size:19px;letter-spacing:2px}
+.brand span{color:var(--ember)}
+.links{display:flex;gap:22px;font-family:Verdana,sans-serif;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase}
+.links a{text-decoration:none;color:var(--muted);transition:color .15s}
+.links a:hover{color:var(--gold)}
+.btn{display:inline-block;background:linear-gradient(180deg,#ff9a3d,#e56a0a);color:#fff;text-decoration:none;
+  font-family:Verdana,sans-serif;font-weight:bold;font-size:13px;letter-spacing:1px;
+  padding:13px 28px;border-radius:12px;border:none;cursor:pointer;box-shadow:0 10px 30px rgba(255,122,26,.35);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.35);box-shadow:none}
+/* hero */
+.hero{position:relative;min-height:88vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;
+  background:radial-gradient(1000px 500px at 50% 110%,rgba(255,122,26,.22),transparent 60%),var(--bg)}
+#embers{position:absolute;inset:0}
+.hero-inner{position:relative;z-index:2;max-width:860px;padding:60px 22px}
+.kicker{font-family:Verdana,sans-serif;font-size:11px;letter-spacing:5px;color:var(--gold);
+  border:1px solid rgba(232,182,76,.45);display:inline-block;padding:8px 18px;border-radius:999px;margin-bottom:22px;background:rgba(232,182,76,.08)}
+.hero h1{font-family:var(--font-d);font-size:clamp(42px,8vw,88px);line-height:1.02;font-weight:800}
+.hero h1 .fire{background:linear-gradient(100deg,#ffe9b0,var(--ember) 60%,#b73c00);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:clamp(15px,2.4vw,19px);margin:20px auto 30px;max-width:600px;line-height:1.65}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.badges{display:flex;gap:26px;justify-content:center;margin-top:36px;flex-wrap:wrap;font-family:Verdana,sans-serif;font-size:12.5px;color:var(--muted)}
+.badges b{display:block;font-size:24px;color:#fff;font-family:var(--font-d)}
+/* sections */
+section{padding:70px 26px;max-width:1100px;margin:0 auto}
+.k{font-family:Verdana,sans-serif;font-size:11px;letter-spacing:4px;color:var(--ember);margin-bottom:8px}
+h2{font-family:var(--font-d);font-size:clamp(28px,5vw,46px);margin-bottom:14px}
+.sub{color:var(--muted);margin-bottom:30px;max-width:620px;line-height:1.7}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.stat{background:var(--coal);padding:24px;text-align:center}
+.stat b{font-family:var(--font-d);font-size:34px;color:var(--gold)}
+.stat span{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:6px;font-family:Verdana,sans-serif}
+/* carta */
+.tabs{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+.tab{font-family:Verdana,sans-serif;font-size:12.5px;letter-spacing:1px;padding:10px 22px;border-radius:999px;cursor:pointer;
+  background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--muted)}
+.tab.on{background:linear-gradient(180deg,#ff9a3d,#e56a0a);color:#fff;border-color:transparent;font-weight:bold}
+.dish{display:flex;justify-content:space-between;gap:14px;padding:15px 4px;border-bottom:1px dashed rgba(255,255,255,.14);animation:fadeUp .4s both}
+.dish h4{font-size:17px}.dish p{color:var(--muted);font-size:13.5px;margin-top:3px}
+.price{font-family:var(--font-d);font-weight:800;color:var(--gold);font-size:18px;white-space:nowrap}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* gallery */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.grid img{width:100%;height:230px;object-fit:cover;border-radius:14px;transition:transform .25s;cursor:pointer}
+.grid img:hover{transform:scale(1.04)}
+/* reviews */
+.rev-track{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.rev{background:var(--coal);border:1px solid var(--line);border-radius:16px;padding:22px}
+.rev .stars{color:var(--gold);letter-spacing:3px;margin-bottom:10px}
+.rev p{font-style:italic;line-height:1.65;color:#e5d5bd}
+.rev b{display:block;margin-top:12px;font-family:Verdana,sans-serif;font-size:12px;color:var(--muted)}
+/* booking */
+.book{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+form{background:var(--coal);border:1px solid var(--line);border-radius:18px;padding:26px;display:grid;gap:12px}
+label{font-family:Verdana,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+input,select{background:#000;border:1px solid rgba(255,255,255,.16);color:#fff;padding:12px 14px;border-radius:10px;font-size:14px;width:100%;outline:none}
+input:focus,select:focus{border-color:var(--ember)}
+.ok{display:none;background:rgba(0,200,120,.1);border:1px solid #00c878;color:#5fe8ab;padding:16px;border-radius:12px;font-size:14px}
+.hours{background:linear-gradient(160deg,rgba(255,122,26,.12),transparent);border:1px solid rgba(255,122,26,.3);border-radius:18px;padding:26px}
+.hours h3{font-family:var(--font-d);margin-bottom:14px}
+.hours li{list-style:none;display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;color:var(--muted)}
+/* footer + wa */
+footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;color:var(--muted);font-size:13px;font-family:Verdana,sans-serif}
+.wa{position:fixed;right:20px;bottom:20px;z-index:55;width:58px;height:58px;border-radius:50%;background:#25d366;
+  display:flex;align-items:center;justify-content:center;font-size:28px;text-decoration:none;box-shadow:0 12px 30px rgba(37,211,102,.45)}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+.reveal.in{opacity:1;transform:none}
+@media(max-width:760px){.links{display:none}.book{grid-template-columns:1fr}.nav{top:60px}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">⚡ WEB DEMO · Gratis durante 24h · ¿La quieres para tu negocio? Escríbenos <b>Quiero la mía</b></div>
+
+<nav class="nav">
+  <div class="brand">CASA <span>ELENA</span></div>
+  <div class="links"><a href="#inicio">Inicio</a><a href="#carta">Carta</a><a href="#galeria">Galería</a><a href="#opiniones">Opiniones</a><a href="#reservar">Reservar</a></div>
+  <a class="btn" href="#reservar">Reservar mesa</a>
+</nav>
+
+<header class="hero" id="inicio">
+  <canvas id="embers"></canvas>
+  <div class="hero-inner">
+    <span class="kicker">ASADOR · DESDE 1987 · TU BARRIO</span>
+    <h1>La brasa de verdad,<br><span class="fire">ahora en tu móvil.</span></h1>
+    <p>Chuletón madurado 45 días, cordero al horno de leña y el menú del día que nunca falla. Reserva en 20 segundos.</p>
+    <div class="cta-row">
+      <a class="btn" href="#carta">Ver la carta</a>
+      <a class="btn ghost" href="#reservar">Reservar mesa</a>
+    </div>
+    <div class="badges">
+      <div><b>4.8★</b>2.300 reseñas</div>
+      <div><b>38</b>años de brasa</div>
+      <div><b>120</b>platos al día</div>
+    </div>
+  </div>
+</header>
+
+<section id="carta">
+  <div class="k">PARA ABRIR BOCA</div>
+  <h2>La carta</h2>
+  <p class="sub">Producto de mercado, brasa de encina y precios de barrio. Toca cada pestaña.</p>
+  <div class="tabs">
+    <button class="tab on" data-t="e">Entrantes</button>
+    <button class="tab" data-t="c">Carnes</button>
+    <button class="tab" data-t="p">Postres</button>
+  </div>
+  <div id="platos"></div>
+</section>
+
+<section id="galeria">
+  <div class="k">ASÍ SE COME AQUÍ</div>
+  <h2>Galería</h2>
+  <p class="sub">Fotos reales de nuestra parrilla y nuestro salón.</p>
+  <div class="grid">
+    <img loading="lazy" src="https://picsum.photos/seed/brasa1/700/520" alt="Parrilla">
+    <img loading="lazy" src="https://picsum.photos/seed/brasa2/700/520" alt="Chuletón">
+    <img loading="lazy" src="https://picsum.photos/seed/brasa3/700/520" alt="Salón">
+    <img loading="lazy" src="https://picsum.photos/seed/brasa4/700/520" alt="Postre">
+  </div>
+</section>
+
+<section id="opiniones">
+  <div class="k">LO QUE DICE EL BARRIO</div>
+  <h2>Opiniones</h2>
+  <p class="sub">4.8 de media en 2.300 reseñas de Google.</p>
+  <div class="rev-track" id="revs"></div>
+</section>
+
+<section id="reservar">
+  <div class="k">SIN LLAMAR, SIN ESPERAR</div>
+  <h2>Reserva tu mesa</h2>
+  <p class="sub">Elige día y hora. Te confirmamos por WhatsApp en minutos.</p>
+  <div class="book">
+    <form id="form">
+      <div><label>Nombre</label><input required placeholder="María García"></div>
+      <div><label>Teléfono / WhatsApp</label><input required placeholder="600 123 456"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label>Día</label><input type="date" required></div>
+        <div><label>Personas</label><select><option>2</option><option>4</option><option>6</option><option>8+</option></select></div>
+      </div>
+      <button class="btn" type="submit">Confirmar reserva</button>
+      <div class="ok" id="ok">✓ ¡Mesa pedida! Te escribimos por WhatsApp para confirmar. Gracias por confiar en Casa Elena.</div>
+    </form>
+    <div class="hours">
+      <h3>Horario</h3>
+      <ul>
+        <li><span>Lunes – Jueves</span><span>13:00 – 16:00</span></li>
+        <li><span>Viernes – Sábado</span><span>13:00 – 16:00 · 20:00 – 23:30</span></li>
+        <li><span>Domingo</span><span>13:00 – 16:30</span></li>
+      </ul>
+      <p style="margin-top:16px;color:var(--muted);font-size:13.5px">📍 Calle de la Brasa 12 · ☎ 910 234 567<br>Menú del día 15,50 € · Parking gratis</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="stats">
+    <div class="stat"><b data-n="38">0</b><span>años</span></div>
+    <div class="stat"><b data-n="2300">0</b><span>reseñas</span></div>
+    <div class="stat"><b data-n="120">0</b><span>platos / día</span></div>
+    <div class="stat"><b data-n="15">0</b><span>min reserva media</span></div>
+  </div>
+</section>
+
+<footer>Asador Casa Elena · Calle de la Brasa 12 · Demo creada por Noira Forge · Esta demo se borra en 24h</footer>
+<a class="wa" href="#" aria-label="WhatsApp">✆</a>
+
+<script>
+// brasas animadas
+const cv=document.getElementById('embers'),cx=cv.getContext('2d');let W,H,P=[];
+function rs(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight}
+addEventListener('resize',rs);rs();
+for(let i=0;i<90;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2.4+.6,s:Math.random()*.9+.25,o:Math.random()*.7+.2,sw:Math.random()*1.2});
+(function loop(){cx.clearRect(0,0,W,H);for(const p of P){p.y-=p.s;p.x+=Math.sin(p.y*.02)*p.sw*.3;if(p.y<-6){p.y=H+6;p.x=Math.random()*W}
+const g=cx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);g.addColorStop(0,`rgba(255,${120+Math.random()*80|0},30,${p.o})`);g.addColorStop(1,'rgba(255,60,0,0)');
+cx.fillStyle=g;cx.beginPath();cx.arc(p.x,p.y,p.r*4,0,7);cx.fill()}requestAnimationFrame(loop)})();
+// carta
+const CARTA={e:[["Croquetas de jamón ibérico","Cremosas, con bechamel de la abuela","8,50 €"],["Ensaladilla rusa","Con ventresca y huevo hilado","7,00 €"],["Morcilla de Burgos","Con piquillos confitados","9,00 €"],["Tabla de ibéricos","Jamón, lomo y queso curado","16,00 €"]],
+c:[["Chuletón 1kg (2 pers.)","Madurado 45 días, brasa de encina","42,00 €"],["Cordero al horno","Paletilla lechal, 3h de horno","19,50 €"],["Secreto ibérico","Con patatas panadera","15,00 €"],["Pollo de corral","Al ajillo con romero","12,50 €"]],
+p:[["Tarta de queso","Cremosa, con frutos rojos","6,50 €"],["Torrija caramelizada","Con helado de vainilla","6,00 €"],["Arroz con leche","Receta de 1987","5,00 €"],["Café + chupito","Para rematar","3,50 €"]]};
+const box=document.getElementById('platos');
+function paint(t){box.innerHTML=CARTA[t].map((d,i)=>`<div class="dish" style="animation-delay:${i*70}ms"><div><h4>${d[0]}</h4><p>${d[1]}</p></div><div class="price">${d[2]}</div></div>`).join('')}
+paint('e');
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');paint(b.dataset.t)});
+// opiniones
+const OPS=[["★★★★★","El chuletón es de otro planeta. Reservamos por la web en un minuto.","— Javi M."],["★★★★★","Trato de familia y el cordero se deshace. Volveremos seguro.","— Lucía R."],["★★★★☆","Sitio de siempre que se ha modernizado. La torrija, obligatoria.","— Andrés P."]];
+document.getElementById('revs').innerHTML=OPS.map(o=>`<div class="rev"><div class="stars">${o[0]}</div><p>"${o[1]}"</p><b>${o[2]}</b></div>`).join('');
+// contadores
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);
+const el=e.target,end=+el.dataset.n,t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/1400);
+el.textContent=Math.round(end*(1-Math.pow(1-p,3))).toLocaleString('es-ES');if(p<1)requestAnimationFrame(f)})(t0)}),{threshold:.5});
+document.querySelectorAll('[data-n]').forEach(el=>io.observe(el));
+// reveals
+const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('section,.hero-inner').forEach(el=>{el.classList.add('reveal');io2.observe(el)});
+// reserva demo
+document.getElementById('form').onsubmit=e=>{e.preventDefault();document.getElementById('ok').style.display='block';e.target.querySelector('button').textContent='✓ Recibida'};
+</script>
+</body>
+</html>
