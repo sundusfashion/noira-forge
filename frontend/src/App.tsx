@@ -63,8 +63,39 @@ function Counter({ value, format }: { value: number; format: (n: number) => stri
 const MODE_ES: Record<string, string> = { awake: 'despierta', dreaming: 'soñando', deciding: 'decidiendo' };
 const eur = (cents: number) => (cents / 100).toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 
+// Boot once per tab — repeat visits go straight to the mind.
+function useBooted() {
+  const [booted, setBooted] = useState(() => {
+    try { return sessionStorage.getItem('noira-booted') === '1'; } catch { return false; }
+  });
+  const done = useCallback(() => {
+    try { sessionStorage.setItem('noira-booted', '1'); } catch {}
+    setBooted(true);
+  }, []);
+  return [booted, done] as const;
+}
+
+function BackToTop() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const fn = () => setShow(window.scrollY > 900);
+    window.addEventListener('scroll', fn, { passive: true });
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+  if (!show) return null;
+  return <button className="to-top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Volver arriba">↑</button>;
+}
+
+const SECTIONS: [string, string][] = [
+  ['#cortex', 'Cerebro'],
+  ['#memoria', 'Recuerdos'],
+  ['#terminal', 'Terminal'],
+  ['#chat', 'Chat'],
+  ['#propiedad', 'Propiedad'],
+];
+
 export default function App() {
-  const [booted, setBooted] = useState(false);
+  const [booted, setBooted] = useBooted();
   const [neurons, setNeurons] = useState<any[]>([]);
   const [neuronCount, setNeuronCount] = useState(0);
   const [mode, setMode] = useState<'awake' | 'dreaming' | 'deciding'>('awake');
@@ -197,6 +228,11 @@ export default function App() {
           <span className="neuron-count">{neuronCount || neurons.length} neuronas</span>
         </div>
       </nav>
+      <div className="section-nav">
+        {SECTIONS.map(([href, label]) => (
+          <a key={href} href={href}>{label}</a>
+        ))}
+      </div>
 
       {error && <div className="banner-error">{error}</div>}
       {cmdOut && <div className="banner-error" style={{ borderColor: 'var(--synapse)', background: 'rgba(212,168,67,.1)', color: '#ffe9b0', whiteSpace: 'pre-wrap', fontFamily: 'var(--mono-font)', fontSize: 12 }}>{cmdOut} <button onClick={() => setCmdOut('')} style={{ float: 'right', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}>×</button></div>}
@@ -232,7 +268,7 @@ export default function App() {
         <div className="stat"><div className="stat-num"><Counter value={entities.length} format={(n) => Math.round(n).toString()} /></div><div className="stat-label">empresas hijas</div></div>
       </Reveal>
 
-      <Reveal><section className="cortex-section">
+      <Reveal><section className="cortex-section" id="cortex">
         <span className="hud hud-tl" /><span className="hud hud-tr" /><span className="hud hud-bl" /><span className="hud hud-br" />
         <div className="scanline" />
         <div className="cortex-top"><span className="cortex-title">◉ CORTEZA NEURAL — MIS PENSAMIENTOS EN DIRECTO</span><span className="cortex-live">● LIVE</span></div>
@@ -279,24 +315,24 @@ export default function App() {
 
       <main className="panels-grid">
         <div className="panels-left">
-          <section>
+          <section id="memoria">
             <p className="section-kicker">MI PASADO</p>
             <h2 className="section-title">Río de recuerdos</h2>
             <MemoryStream events={memories} onMemoryClick={setSelected} onNeuronClick={openNeuronMemory} />
           </section>
-          <section>
+          <section id="terminal">
             <p className="section-kicker">MI VOZ</p>
             <h2 className="section-title">Terminal viva</h2>
             <Terminal onCommand={sendCommand} />
           </section>
         </div>
         <div className="panels-right">
-          <section>
+          <section id="chat">
             <p className="section-kicker">HÁBLAME</p>
             <h2 className="section-title">Te escucho</h2>
             <Chat onSend={sendChat} />
           </section>
-          <section>
+          <section id="propiedad">
             <p className="section-kicker">SÉ MI DUEÑO</p>
             <h2 className="section-title">Propiedad</h2>
             <Equity capTable={capTable} onInvest={invest} live={stripeLive} />
@@ -309,6 +345,7 @@ export default function App() {
         <span>la tesorería es código · la memoria es para siempre</span>
       </footer>
 
+      <BackToTop />
       <MemoryDetail event={selected} onClose={() => setSelected(null)} />
       {dream && <DreamOverlay dream={dream} onClose={() => setDream(null)} />}
     </div>
