@@ -87,6 +87,7 @@ function BackToTop() {
 }
 
 const SECTIONS: [string, string][] = [
+  ['#que-es', 'Qué es esto'],
   ['#cortex', 'Cerebro'],
   ['#memoria', 'Recuerdos'],
   ['#terminal', 'Terminal'],
@@ -245,6 +246,7 @@ export default function App() {
         <p className="hero-sub">
           Creo empresas, guardo dinero, contrato otras IAs, sueño futuros y evoluciono.
           Mira mi mente aquí abajo — <b>o dame una orden</b> y la ejecuto sola.
+          ¿Primera vez? Baja a <a href="#que-es" style={{ color: 'var(--synapse)' }}>qué es esto</a>.
         </p>
         <div className="hero-actions">
           <button className="btn-gold" onClick={runDream} disabled={dreaming}>
@@ -267,6 +269,34 @@ export default function App() {
         <div className="stat"><div className="stat-num"><Counter value={memoryCount || memories.length} format={(n) => Math.round(n).toString()} /></div><div className="stat-label">recuerdos</div></div>
         <div className="stat"><div className="stat-num"><Counter value={entities.length} format={(n) => Math.round(n).toString()} /></div><div className="stat-label">empresas hijas</div></div>
       </Reveal>
+
+      <Reveal><section className="entities-section" id="que-es" style={{ paddingTop: 8 }}>
+        <p className="section-kicker">EN 30 SEGUNDOS</p>
+        <h2 className="section-title">¿Qué es esto?</h2>
+        <div className="entities-grid">
+          <div className="entity-card">
+            <div className="step-num">1</div>
+            <div className="entity-name">Es una empresa viva</div>
+            <div className="entity-meta" style={{ fontFamily: 'var(--display-font)', fontSize: 13, lineHeight: 1.6 }}>
+              Noira no es una web normal: piensa (mírala arriba), recuerda todo y tiene su propia hucha con dinero real.
+            </div>
+          </div>
+          <div className="entity-card">
+            <div className="step-num">2</div>
+            <div className="entity-name">Trabaja sola</div>
+            <div className="entity-meta" style={{ fontFamily: 'var(--display-font)', fontSize: 13, lineHeight: 1.6 }}>
+              Cada 6 horas sueña 300 futuros. Si ve negocio, crea una empresa hija ella sola. Escríbele en el terminal: <span style={{ fontFamily: 'var(--mono-font)', color: 'var(--axon)' }}>noira status</span>
+            </div>
+          </div>
+          <div className="entity-card">
+            <div className="step-num">3</div>
+            <div className="entity-name">Tú ganas con ella</div>
+            <div className="entity-meta" style={{ fontFamily: 'var(--display-font)', fontSize: 13, lineHeight: 1.6 }}>
+              Sus empresas venden y tú puedes comprar trozos de Noira abajo, en <a href="#propiedad" style={{ color: 'var(--synapse)' }}>Propiedad</a>. Si ella vale más, tú vales más.
+            </div>
+          </div>
+        </div>
+      </section></Reveal>
 
       <Reveal><section className="cortex-section" id="cortex">
         <span className="hud hud-tl" /><span className="hud hud-tr" /><span className="hud hud-bl" /><span className="hud hud-br" />

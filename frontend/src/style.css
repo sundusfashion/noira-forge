@@ -112,6 +112,12 @@ body {
 .entity-card { position: relative; border: 1px solid rgba(212, 168, 67, .3); border-radius: var(--r-lg); padding: 20px; background: linear-gradient(160deg, rgba(212, 168, 67, .09), rgba(212, 168, 67, .02) 55%, transparent); overflow: hidden; transition: transform .15s, box-shadow .15s; }
 .entity-card:hover { transform: translateY(-3px); box-shadow: 0 16px 44px rgba(212, 168, 67, .14); }
 .entity-card::before { content: '◈'; position: absolute; top: 14px; right: 16px; color: var(--synapse); opacity: .7; }
+.step-num {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(180deg, #f0cd72, var(--synapse)); color: #1a1204;
+  font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px; box-shadow: 0 6px 22px rgba(212, 168, 67, .35);
+}
 .entity-name { font-weight: 800; font-size: 17px; color: var(--glial); margin-bottom: 6px; }
 .entity-meta { font-size: 12px; color: var(--ink-dim); font-family: var(--mono-font); margin-top: 2px; }
 .entity-card a { display: inline-block; margin-top: 10px; font-size: 12px; color: var(--synapse); text-decoration: none; border-bottom: 1px dotted rgba(212, 168, 67, .5); }

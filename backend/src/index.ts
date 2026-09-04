@@ -155,6 +155,16 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   const ip = clientIp(req);
 
   if (url.pathname === '/health') return json(200, { ok: true, mode: core.mode, mem: mem.count(), uptimeSec: Math.round(process.uptime()) });
+  if (url.pathname === '/robots.txt') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('User-agent: *\nAllow: /\n\nSitemap: https://noira-forge-entity.onrender.com/sitemap.xml\n');
+    return;
+  }
+  if (url.pathname === '/sitemap.xml') {
+    res.writeHead(200, { 'Content-Type': 'application/xml' });
+    res.end(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://noira-forge-entity.onrender.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url></urlset>`);
+    return;
+  }
   // Web mind: everything that is not /api/* or /health is the built frontend.
   if (req.method === 'GET' && !url.pathname.startsWith('/api/')) {
     if (serveWeb(url.pathname, res)) return;
