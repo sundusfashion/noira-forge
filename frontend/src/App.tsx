@@ -216,7 +216,7 @@ export default function App() {
     if (found) setSelected(found);
   }
 
-  if (!booted) return <Boot onDone={() => setBooted(true)} />;
+  if (!booted) return <Boot onDone={() => setBooted()} />;
 
   return (
     <div className="noira-app">
