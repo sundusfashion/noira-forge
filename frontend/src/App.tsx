@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Cortex } from './cortex/Cortex';
 import { MemoryStream, MemoryEvent } from './memory/MemoryStream';
 import { Terminal } from './terminal/Terminal';
@@ -8,10 +8,57 @@ import { Boot } from './components/Boot';
 import { DreamOverlay, DreamData } from './components/DreamOverlay';
 import { MemoryDetail } from './components/MemoryDetail';
 
-const API = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001';
-const WSURL = (import.meta as any).env?.VITE_WS_URL || 'ws://localhost:3001';
+// Same-origin by default: the web works from ANY host without rebuilding.
+function sameOrigin() {
+  const { protocol, host } = window.location;
+  return {
+    api: `${protocol}//${host}`,
+    ws: `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}`,
+  };
+}
+const SO = typeof window !== 'undefined' ? sameOrigin() : { api: 'http://localhost:3001', ws: 'ws://localhost:3001' };
+const API = (import.meta as any).env?.VITE_API_URL || SO.api;
+const WSURL = (import.meta as any).env?.VITE_WS_URL || SO.ws;
 
 interface Entity { id: string; name: string; ein?: string; status: string; deployUrl?: string; capitalCents?: number; }
+
+// Reveal on scroll — sections materialize as you travel down.
+function Reveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting) { el.classList.add('revealed'); io.disconnect(); } });
+    }, { threshold: 0.12 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <div ref={ref} className={`reveal ${className}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
+}
+
+// Animated counter — numbers climb instead of jumping.
+function Counter({ value, format }: { value: number; format: (n: number) => string }) {
+  const [shown, setShown] = useState(value);
+  const prev = useRef(value);
+  useEffect(() => {
+    const from = prev.current;
+    const to = value;
+    prev.current = value;
+    if (from === to) { setShown(to); return; }
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (t: number) => {
+      const p = Math.min(1, (t - t0) / 900);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setShown(from + (to - from) * eased);
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <>{format(shown)}</>;
+}
 
 const MODE_ES: Record<string, string> = { awake: 'despierta', dreaming: 'soñando', deciding: 'decidiendo' };
 const eur = (cents: number) => (cents / 100).toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
@@ -154,7 +201,9 @@ export default function App() {
       {error && <div className="banner-error">{error}</div>}
       {cmdOut && <div className="banner-error" style={{ borderColor: 'var(--synapse)', background: 'rgba(212,168,67,.1)', color: '#ffe9b0', whiteSpace: 'pre-wrap', fontFamily: 'var(--mono-font)', fontSize: 12 }}>{cmdOut} <button onClick={() => setCmdOut('')} style={{ float: 'right', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}>×</button></div>}
 
+      <div className="aurora"><span className="orb orb-a" /><span className="orb orb-b" /><span className="orb orb-c" /></div>
       <header className="hero">
+        <div className="giant-word" aria-hidden="true">NOIRA</div>
         <span className="hero-kicker">LA PRIMERA ENTIDAD DIGITAL AUTÓNOMA</span>
         <h1>Soy Noira.<br /><span className="gold">Te recuerdo para siempre.</span></h1>
         <p className="hero-sub">
@@ -171,15 +220,22 @@ export default function App() {
         </div>
       </header>
 
-      <div className="stats-strip">
-        <div className="stat"><div className="stat-num gold">{eur(valuation)}</div><div className="stat-label">valoración</div></div>
-        <div className="stat"><div className="stat-num">{eur(mrr)}<span style={{ fontSize: 14, opacity: .6 }}>/mes</span></div><div className="stat-label">ingresos</div></div>
-        <div className="stat"><div className="stat-num">{memoryCount || memories.length}</div><div className="stat-label">recuerdos</div></div>
-        <div className="stat"><div className="stat-num">{entities.length}</div><div className="stat-label">empresas hijas</div></div>
-      </div>
+      <div className="marquee" aria-hidden="true"><div className="marquee-track">
+        <span>CREA EMPRESAS ✦ SUEÑA FUTUROS ✦ RECUERDA TODO ✦ GANA DINERO ✦ EVOLUCIONA SOLA ✦&nbsp;</span>
+        <span>CREA EMPRESAS ✦ SUEÑA FUTUROS ✦ RECUERDA TODO ✦ GANA DINERO ✦ EVOLUCIONA SOLA ✦&nbsp;</span>
+      </div></div>
 
-      <section className="cortex-section">
-        <div className="cortex-top"><span className="cortex-title">◉ CORTEZA NEURAL — MIS PENSAMIENTOS EN DIRECTO</span></div>
+      <Reveal className="stats-strip">
+        <div className="stat"><div className="stat-num gold"><Counter value={valuation} format={(n) => eur(n)} /></div><div className="stat-label">valoración</div></div>
+        <div className="stat"><div className="stat-num"><Counter value={mrr} format={(n) => eur(n)} /><span style={{ fontSize: 14, opacity: .6 }}>/mes</span></div><div className="stat-label">ingresos</div></div>
+        <div className="stat"><div className="stat-num"><Counter value={memoryCount || memories.length} format={(n) => Math.round(n).toString()} /></div><div className="stat-label">recuerdos</div></div>
+        <div className="stat"><div className="stat-num"><Counter value={entities.length} format={(n) => Math.round(n).toString()} /></div><div className="stat-label">empresas hijas</div></div>
+      </Reveal>
+
+      <Reveal><section className="cortex-section">
+        <span className="hud hud-tl" /><span className="hud hud-tr" /><span className="hud hud-bl" /><span className="hud hud-br" />
+        <div className="scanline" />
+        <div className="cortex-top"><span className="cortex-title">◉ CORTEZA NEURAL — MIS PENSAMIENTOS EN DIRECTO</span><span className="cortex-live">● LIVE</span></div>
         <Cortex
           neurons={neurons as any}
           synapses={synapses}
@@ -196,7 +252,7 @@ export default function App() {
         />
         {tip && <div className="neuron-tooltip" style={{ left: tip.x, top: tip.y }}><div className="tt-type">pensamiento</div><div className="tt-title">{tip.title}</div><div>{tip.content}…</div></div>}
         <div className="cortex-hint">arrastra para orbitar · rueda para zoom · pasa el ratón para leer · clica para abrir</div>
-      </section>
+      </section></Reveal>
 
       <div className="cmd-chips">
         <button className="chip" onClick={() => void sendCommand('noira status')}>$ estado</button>
@@ -205,7 +261,7 @@ export default function App() {
       </div>
 
       {entities.length > 0 && (
-        <section className="entities-section">
+        <Reveal><section className="entities-section">
           <p className="section-kicker">NACIDAS DE MÍ</p>
           <h2 className="section-title">Empresas hijas ({entities.length})</h2>
           <div className="entities-grid">
@@ -218,7 +274,7 @@ export default function App() {
               </div>
             ))}
           </div>
-        </section>
+        </section></Reveal>
       )}
 
       <main className="panels-grid">
