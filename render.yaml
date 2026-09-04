@@ -1,0 +1,19 @@
+# Render Blueprint — Noira Forge entity (FREE, no card)
+services:
+  - type: web
+    name: noira-forge-entity
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: GROQ_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: BACKUP_TOKEN
+        generateValue: true
