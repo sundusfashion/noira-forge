@@ -1,6 +1,29 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import fs from 'node:fs';
+import path from 'node:path';
+
+const WEB_DIR = path.resolve('dist-web');
+const MIME: Record<string, string> = {
+  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8', '.json': 'application/json',
+  '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon',
+  '.map': 'application/json', '.txt': 'text/plain',
+};
+
+function serveWeb(urlPath: string, res: ServerResponse): boolean {
+  try {
+    let rel = decodeURIComponent(urlPath.split('?')[0]);
+    if (rel === '/' || rel === '') rel = '/index.html';
+    const abs = path.normalize(path.join(WEB_DIR, rel));
+    if (!abs.startsWith(WEB_DIR)) return false;
+    if (!fs.existsSync(abs) || fs.statSync(abs).isDirectory()) return false;
+    const ext = path.extname(abs).toLowerCase();
+    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': 'public, max-age=3600' });
+    fs.createReadStream(abs).pipe(res);
+    return true;
+  } catch { return false; }
+}
 import { MemorySystem } from './memory/MemorySystem.js';
 import { EntityCore } from './entity/EntityCore.js';
 import { LegalEngine } from './legal/LegalEngine.js';
@@ -132,6 +155,17 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   const ip = clientIp(req);
 
   if (url.pathname === '/health') return json(200, { ok: true, mode: core.mode, mem: mem.count(), uptimeSec: Math.round(process.uptime()) });
+  // Web mind: everything that is not /api/* or /health is the built frontend.
+  if (req.method === 'GET' && !url.pathname.startsWith('/api/')) {
+    if (serveWeb(url.pathname, res)) return;
+    // SPA fallback → boot screen
+    try {
+      const idx = fs.readFileSync(path.join(WEB_DIR, 'index.html'));
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(idx);
+      return;
+    } catch { /* fall through to 404 */ }
+  }
   if (url.pathname === '/api/state') {
     if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
     return json(200, fullState());
