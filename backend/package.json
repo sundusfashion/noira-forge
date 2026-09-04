@@ -6,7 +6,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "tsx --test tests/memory.test.ts tests/guard.test.ts tests/marketing.test.ts"
+    "test": "tsx --test tests/memory.test.ts tests/guard.test.ts tests/marketing.test.ts tests/leads.test.ts"
   },
   "dependencies": {
     "ws": "^8.17.0",

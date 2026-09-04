@@ -120,6 +120,8 @@ async function handleChat(message: string): Promise<string> {
 import { CommandSchema, ChatSchema, InvestSchema, SpawnSchema, DreamSchema, RateLimiter, clientIp } from './api/guard.js';
 import { MarketingStore, mdToHtml } from './marketing/Marketing.js';
 import { getDemo, ensureShowcase, createDemo, isExpired, expiredPage } from './demos/Demos.js';
+import { searchPhotos, searchVideos } from './media/Pexels.js';
+import { findLeads } from './leads/Leads.js';
 
 ensureShowcase('casa-elena', 'Asador Casa Elena');
 
@@ -207,6 +209,28 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   }
   if (url.pathname === '/api/blog' && req.method === 'GET') {
     return json(200, { articles: marketing.list('published', 50) });
+  }
+  // Real business finder (OpenStreetMap, free): the agency's lead radar.
+  if (url.pathname === '/api/leads' && req.method === 'GET') {
+    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
+    const lat = Number(url.searchParams.get('lat') || '40.4168');
+    const lon = Number(url.searchParams.get('lon') || '-3.7038');
+    const radius = Math.min(5000, Math.max(100, Number(url.searchParams.get('radius') || '1000')));
+    if (!isFinite(lat) || !isFinite(lon)) return json(400, { error: 'lat/lon invalid' });
+    try {
+      const leads = await findLeads(lat, lon, radius, 30);
+      return json(200, { count: leads.length, leads });
+    } catch (e: any) { return json(502, { error: `leads: ${e.message}` }); }
+  }
+  // Sector media (Pexels, free): coherent photos + videos per business type.
+  if (url.pathname === '/api/media' && req.method === 'GET') {
+    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
+    const query = String(url.searchParams.get('query') || 'restaurant').slice(0, 80);
+    const kind = url.searchParams.get('type') === 'video' ? 'video' : 'photo';
+    try {
+      if (kind === 'video') return json(200, { videos: await searchVideos(query, 3) });
+      return json(200, { photos: await searchPhotos(query, 6) });
+    } catch (e: any) { return json(502, { error: e.message }); }
   }
   // Demo gate: expiring client demos die alone after their hours (showcase ones live forever).
   if (req.method === 'GET' && url.pathname.startsWith('/demo/')) {
