@@ -76,23 +76,23 @@ export function DreamOverlay({ dream, onClose }: { dream: DreamData; onClose: ()
     return () => cancelAnimationFrame(raf);
   }, [dream]);
 
-  const fmt = (c: number) => `$${Math.round(c / 100).toLocaleString()}/mo`;
+  const fmt = (c: number) => `${Math.round(c / 100).toLocaleString('es-ES')} €/mes`;
 
   return (
     <div className="dream-overlay">
       <div className="dream-head">
         <div>
-          <div className="dream-kicker">DREAM CYCLE · 300 FUTURES SIMULATED</div>
-          <h2>Noira is dreaming</h2>
+          <div className="dream-kicker">CICLO DE SUEÑO · 300 FUTUROS SIMULADOS</div>
+          <h2>Noira está soñando</h2>
         </div>
-        <button className="dream-close" onClick={onClose}>wake ↑</button>
+        <button className="dream-close" onClick={onClose}>despertar ↑</button>
       </div>
       <canvas ref={canvasRef} className="dream-canvas" />
       <div className="dream-stats">
-        <div><span>median</span><b>{fmt(dream.median)}</b></div>
-        <div><span>upside p90</span><b className="up">{fmt(dream.p90)}</b></div>
-        <div><span>downside p10</span><b className="down">{fmt(dream.p10)}</b></div>
-        <div><span>P(3× revenue)</span><b>{(dream.probSuccess * 100).toFixed(1)}%</b></div>
+        <div><span>mediana</span><b>{fmt(dream.median)}</b></div>
+        <div><span>techo p90</span><b className="up">{fmt(dream.p90)}</b></div>
+        <div><span>suelo p10</span><b className="down">{fmt(dream.p10)}</b></div>
+        <div><span>P(×3 ingresos)</span><b>{(dream.probSuccess * 100).toFixed(1)}%</b></div>
       </div>
       <ul className="dream-insights">
         {dream.insights.map((s, i) => <li key={i}>{s}</li>)}

@@ -40,7 +40,7 @@ export const Equity: React.FC<EquityProps> = ({
           {holding.address.slice(0, 6)}...{holding.address.slice(-4)}
         </span>
         <span className="holding-shares">
-          {holding.shares.toLocaleString()} shares
+          {holding.shares.toLocaleString('es-ES')} acc.
         </span>
         <span className="holding-percentage">
           {holding.percentage.toFixed(1)}%
@@ -56,12 +56,12 @@ export const Equity: React.FC<EquityProps> = ({
   return (
     <div className="equity-panel">
       <div className="equity-header">
-        <h3>Equity Ownership {live
-          ? <span className="pay-badge pay-live">● card live</span>
-          : <span className="pay-badge pay-sandbox">○ ledger mode — card activates with keys</span>}</h3>
+        <h3>Propiedad {live
+          ? <span className="pay-badge pay-live">● tarjeta live</span>
+          : <span className="pay-badge pay-sandbox">○ modo libro — tarjeta con keys</span>}</h3>
         <div className="equity-valuation">
-          <span>Valuation: ${capTable.valuation.toLocaleString()}</span>
-          <span>• Multiple: {capTable.revenueMultiple.toFixed(1)}x Revenue</span>
+          <span>Valor: {capTable.valuation.toLocaleString('es-ES')} €</span>
+          <span>• Múltiplo: {capTable.revenueMultiple.toFixed(1)}x ingresos</span>
         </div>
       </div>
 
@@ -86,19 +86,19 @@ export const Equity: React.FC<EquityProps> = ({
           }}
           className="equity-invest-btn"
         >
-          Invest ${amount || '0'}
+          Invertir {amount || '0'} €
         </button>
-        <span>Min: $10 | Max: $1000 per transaction</span>
+        <span className="equity-invest-note">Mín 10 € · Máx 1000 € por compra</span>
       </div>
 
       <div className="equity-stats">
         <div>
-          <span>Total Holdings</span>
-          <span>{capTable.holdings.length}</span>
+          {capTable.holdings.length}
+          <span>dueños</span>
         </div>
         <div>
-          <span>Active Companies</span>
-          <span>{Math.round(Math.random() * 5 + 2)}</span>
+          {(100 - (capTable.holdings[0]?.percentage ?? 100)).toFixed(1)}%
+          <span>en manos públicas</span>
         </div>
       </div>
     </div>

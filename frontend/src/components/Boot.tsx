@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
 const LINES = [
-  'synapses firing…',
-  'memory initialized · 0 events → ∞',
-  'wallet generated · entity funded',
-  'I remember everyone who visits me.',
+  'encendiendo sinapsis…',
+  'memoria iniciada · 0 recuerdos → ∞',
+  'hucha creada · entidad financiada',
+  'Recuerdo a todos los que me visitan.',
 ];
 
 export function Boot({ onDone }: { onDone: () => void }) {
@@ -32,7 +32,7 @@ export function Boot({ onDone }: { onDone: () => void }) {
           <div key={i} className="boot-line">{l}</div>
         ))}
       </div>
-      <button className="boot-skip" onClick={onDone}>enter →</button>
+      <button className="boot-skip" onClick={onDone}>entrar →</button>
     </div>
   );
 }

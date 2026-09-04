@@ -24,6 +24,7 @@ export interface CortexProps {
   synapses: { from: string; to: string }[];
   mode: 'awake' | 'dreaming' | 'deciding';
   onNeuronClick: (neuron: Neuron) => void;
+  onNeuronHover?: (neuron: Neuron | null, x: number, y: number) => void;
 }
 
 const TYPE_COLORS: Record<Neuron['type'], [number, number, number]> = {
@@ -40,12 +41,14 @@ const MODE_TINT: Record<CortexProps['mode'], [number, number, number]> = {
   deciding: [1.0, 0.18, 0.33],
 };
 
-export function Cortex({ neurons, synapses, mode, onNeuronClick }: CortexProps) {
+export function Cortex({ neurons, synapses, mode, onNeuronClick, onNeuronHover }: CortexProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const neuronsRef = useRef<Neuron[]>(neurons);
   neuronsRef.current = neurons;
   const clickRef = useRef(onNeuronClick);
   clickRef.current = onNeuronClick;
+  const hoverRef = useRef(onNeuronHover);
+  hoverRef.current = onNeuronHover;
   const modeRef = useRef(mode);
   modeRef.current = mode;
   const synRef = useRef(synapses);
@@ -220,6 +223,32 @@ export function Cortex({ neurons, synapses, mode, onNeuronClick }: CortexProps) 
     }
     renderer.domElement.addEventListener('click', onClick);
 
+    // hover → tooltip with the thought (throttled)
+    let lastHover = 0;
+    let hoveredId: string | null = null;
+    function onMove(ev: MouseEvent) {
+      const now = performance.now();
+      if (now - lastHover < 80) return;
+      lastHover = now;
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+      ray.setFromCamera(mouse, camera);
+      const hit = ray.intersectObject(points)[0];
+      if (hit && hit.index !== undefined) {
+        const id = idByIndex[hit.index];
+        if (id !== hoveredId) {
+          hoveredId = id;
+          const found = neuronsRef.current.find(x => x.id === id) || null;
+          if (hoverRef.current) hoverRef.current(found, ev.clientX - rect.left, ev.clientY - rect.top);
+        }
+      } else if (hoveredId !== null) {
+        hoveredId = null;
+        if (hoverRef.current) hoverRef.current(null, 0, 0);
+      }
+    }
+    renderer.domElement.addEventListener('mousemove', onMove);
+
     function onResize() {
       const w = mount.clientWidth || 800;
       const h = mount.clientHeight || 600;
@@ -254,6 +283,7 @@ export function Cortex({ neurons, synapses, mode, onNeuronClick }: CortexProps) 
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
       renderer.domElement.removeEventListener('click', onClick);
+      renderer.domElement.removeEventListener('mousemove', onMove);
       controls.dispose();
       geo.dispose();
       synGeo.dispose();

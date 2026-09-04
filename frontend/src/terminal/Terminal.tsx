@@ -12,7 +12,7 @@ export interface TerminalProps {
 
 export function Terminal({ onCommand }: TerminalProps) {
   const [lines, setLines] = useState<TerminalLine[]>([
-    { text: 'noira-forge shell — type "noira status" to begin', ok: true },
+    { text: 'consola noira — escribe "noira status" para empezar', ok: true },
   ]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -45,9 +45,9 @@ export function Terminal({ onCommand }: TerminalProps) {
   return (
     <div className="terminal-wrapper">
       <div className="terminal-header">
-        <span>NOIRA TERMINAL</span>
+        <span>TERMINAL NOIRA</span>
         <span className="terminal-status" style={{ color: busy ? 'var(--dopamine)' : 'var(--axon)' }}>
-          {busy ? 'running' : 'idle'}
+          {busy ? 'ejecutando' : 'lista'}
         </span>
       </div>
       <div className="terminal-buffer" ref={bufRef}>
@@ -63,7 +63,7 @@ export function Terminal({ onCommand }: TerminalProps) {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') void run(input); }}
-          placeholder={busy ? 'executing…' : '$ noira status'}
+          placeholder={busy ? 'ejecutando…' : '$ noira status'}
           disabled={busy}
           spellCheck={false}
         />

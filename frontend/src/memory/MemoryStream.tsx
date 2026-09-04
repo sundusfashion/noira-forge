@@ -43,9 +43,9 @@ export const MemoryStream: React.FC<MemoryStreamProps> = ({
       onScroll={(e) => setScrollPos((e.currentTarget as HTMLDivElement).scrollTop)}
     >
       <div className="memory-header">
-        <h3>Memory Stream</h3>
+        <h3>Río de recuerdos</h3>
         <span className="memory-count">
-          {events.length} thoughts recorded
+          {events.length} pensamientos
         </span>
       </div>
       
@@ -69,8 +69,8 @@ export const MemoryStream: React.FC<MemoryStreamProps> = ({
             </div>
             <div className="memory-title">{event.title}</div>
             <div className="memory-meta">
-              {new Date(event.timestamp * 1000).toLocaleTimeString()} • 
-              Importance: {Math.round(event.importance * 10)}/10
+              {new Date(event.timestamp).toLocaleString('es-ES')} •
+              importancia {Math.round(event.importance * 10)}/10
             </div>
           </div>
         ))}
@@ -78,7 +78,7 @@ export const MemoryStream: React.FC<MemoryStreamProps> = ({
       
       {events.length === 0 && (
         <div className="memory-empty">
-          No thoughts yet. Wait for Noira to awaken.
+          Aún sin pensamientos. Espera a que Noira despierte.
         </div>
       )}
     </div>

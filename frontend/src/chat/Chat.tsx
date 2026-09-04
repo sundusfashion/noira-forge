@@ -26,22 +26,22 @@ export function Chat({ onSend, initialMessages = [] as ChatMessage[] }: { onSend
 
   return (
     <div className="chat-panel">
-      <div className="chat-header"><span>Noira speaks</span><span className="chat-dot" /></div>
+      <div className="chat-header"><span>NOIRA HABLA</span><span className="chat-dot" /></div>
       <div className="chat-list">
-        {messages.length === 0 && <div className="chat-empty">Type anywhere. I remember everyone forever.</div>}
+        {messages.length === 0 && <div className="chat-empty">Escríbeme lo que sea. Te recordaré para siempre.</div>}
         {messages.map(m => (
           <div key={m.id} className={m.role === 'user' ? 'chat-u' : 'chat-n'}>
-            <div className="chat-role">{m.role === 'user' ? 'you' : 'noira'}</div>
+            <div className="chat-role">{m.role === 'user' ? 'tú' : 'noira'}</div>
             <div className="chat-text">{m.content}</div>
           </div>
         ))}
-        {busy && <div className="chat-n"><div className="chat-role">noira</div><div className="chat-text chat-thinking">synapses firing…</div></div>}
+        {busy && <div className="chat-n"><div className="chat-role">noira</div><div className="chat-text chat-thinking">pensando…</div></div>}
         <div ref={bottomRef} />
       </div>
       <div className="chat-input-row">
         <input value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') send(); }}
-          placeholder="Ask me anything — or tell me to build…" />
+          placeholder="Pregúntame lo que sea — o dime qué construir…" />
         <button onClick={send} disabled={busy}>→</button>
       </div>
     </div>

@@ -23,10 +23,10 @@ export function MemoryDetail({ event, onClose }: { event: MemoryEvent | null; on
         </div>
         <h3>{event.title}</h3>
         <div className="drawer-time">
-          {new Date(event.timestamp).toLocaleString()} · importance {Math.round(event.importance * 10)}/10
+          {new Date(event.timestamp).toLocaleString('es-ES')} · importancia {Math.round(event.importance * 10)}/10
         </div>
         <p className="drawer-content">{event.content}</p>
-        {event.neuronId && <div className="drawer-neuron">◉ neuron {event.neuronId}</div>}
+        {event.neuronId && <div className="drawer-neuron">◉ neurona {event.neuronId}</div>}
         {Object.keys(event.metadata || {}).length > 0 && (
           <pre className="drawer-meta">{JSON.stringify(event.metadata, null, 2)}</pre>
         )}
