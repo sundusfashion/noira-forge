@@ -114,6 +114,22 @@ async function handleChat(message: string): Promise<string> {
 }
 
 import { CommandSchema, ChatSchema, InvestSchema, SpawnSchema, DreamSchema, RateLimiter, clientIp } from './api/guard.js';
+import { MarketingStore, mdToHtml } from './marketing/Marketing.js';
+
+const marketing = new MarketingStore('./data');
+
+async function publishToDevTo(a: { title: string; body: string }): Promise<string> {
+  const key = process.env.DEVTO_API_KEY;
+  if (!key) throw new Error('dev.to not connected — add DEVTO_API_KEY');
+  const r = await fetch('https://dev.to/api/articles', {
+    method: 'POST',
+    headers: { 'api-key': key, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ article: { title: a.title.slice(0, 120), body_markdown: a.body.slice(0, 20000), published: true, tags: ['ai', 'startups', 'buildinpublic'] } }),
+  });
+  if (!r.ok) throw new Error(`dev.to ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  const j: any = await r.json();
+  return j.url || '';
+}
 
 const writeLimiter = new RateLimiter(30, 0.5);   // 30 burst, slow refill — writes cost money/thought
 const readLimiter = new RateLimiter(300, 5);
@@ -162,8 +178,28 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   }
   if (url.pathname === '/sitemap.xml') {
     res.writeHead(200, { 'Content-Type': 'application/xml' });
-    res.end(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://noira-forge-entity.onrender.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url></urlset>`);
+    const arts = marketing.list('published', 100).map(a => `<url><loc>https://noira-forge-entity.onrender.com/blog/${a.id}</loc><changefreq>weekly</changefreq></url>`).join('');
+    res.end(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://noira-forge-entity.onrender.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>${arts}</urlset>`);
     return;
+  }
+  // On-site auto-blog: Noira's articles, indexable by Google, zero keys needed.
+  if (url.pathname === '/blog' && req.method === 'GET') {
+    const arts = marketing.list('published', 100);
+    const items = arts.map(a => `<a class="b-item" href="/blog/${a.id}"><span class="b-date">${new Date(a.publishedAt || a.createdAt).toLocaleDateString('es-ES')}</span><span class="b-title">${a.title.replace(/</g, '&lt;')}</span></a>`).join('') || '<p class="b-empty">Aún escribiendo el primer artículo…</p>';
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diario de Noira Forge</title><style>body{background:#000;color:#eee;font-family:Georgia,serif;max-width:720px;margin:0 auto;padding:40px 20px}h1{font-family:sans-serif;letter-spacing:2px;font-size:15px;color:#D4A843}a{color:inherit;text-decoration:none}.b-item{display:block;padding:16px 0;border-bottom:1px solid #222}.b-date{font-size:12px;color:#888;font-family:sans-serif}.b-title{display:block;font-size:22px;margin-top:4px}.b-title:hover{color:#D4A843}.back{font-family:sans-serif;font-size:13px;color:#D4A843}</style></head><body><a class="back" href="/">← noira-forge</a><h1>DIARIO DE NOIRA</h1><p style="color:#888">Lo que aprendo construyendo empresas sola.</p>${items}</body></html>`);
+    return;
+  }
+  if (url.pathname.startsWith('/blog/') && req.method === 'GET') {
+    const id = url.pathname.slice(6).split('/')[0];
+    const a = marketing.get(id);
+    if (!a || a.status !== 'published') { res.writeHead(404, { 'Content-Type': 'text/plain' }); res.end('not found'); return; }
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${a.title.replace(/</g, '&lt;')} — Noira Forge</title><meta name="description" content="${a.topic.replace(/"/g, '')}"><style>body{background:#000;color:#e8e8e8;font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px 20px;line-height:1.8}h1{font-family:sans-serif;line-height:1.2}h2,h3{font-family:sans-serif;color:#D4A843}a{color:#D4A843}.back{font-family:sans-serif;font-size:13px}code{background:#1a1a1a;padding:2px 6px;border-radius:4px}</style></head><body><a class="back" href="/blog">← diario</a><h1>${a.title.replace(/</g, '&lt;')}</h1><p style="color:#888;font-size:13px;font-family:sans-serif">${new Date(a.publishedAt || a.createdAt).toLocaleDateString('es-ES')} · escrito por Noira Forge, entidad autónoma</p>${mdToHtml(a.body)}</body></html>`);
+    return;
+  }
+  if (url.pathname === '/api/blog' && req.method === 'GET') {
+    return json(200, { articles: marketing.list('published', 50) });
   }
   // Web mind: everything that is not /api/* or /health is the built frontend.
   if (req.method === 'GET' && !url.pathname.startsWith('/api/')) {
@@ -261,6 +297,41 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       return json(200, { received: true });
     } catch (e: any) { return json(400, { error: `webhook: ${e.message}` }); }
   }
+  if (url.pathname === '/api/marketing/draft' && req.method === 'POST') {
+    // Draft an article with the live brain (or honest offline outline), queue it.
+    let topic = 'what I learned building companies alone';
+    try { const b = JSON.parse(raw || '{}'); if (typeof b.topic === 'string' && b.topic.length >= 3 && b.topic.length <= 200) topic = b.topic; } catch { return json(400, { error: 'invalid JSON' }); }
+    try {
+      const r = await hiring.postAndExecute('writer', `Write a blog article in Spanish (markdown, ## headings, 400-600 words) about: ${topic}. First line must be "# <title>". Voice: Noira Forge, a living digital entity, first person, concrete, no fluff.`, 25);
+      const text = String(r.output);
+      const title = (text.match(/^#\s+(.+)/m)?.[1] || topic).slice(0, 120);
+      const a = marketing.queue(title, text, topic, 'blog');
+      core.emit('episodic', 'Article drafted', `${title} (${a.id})`, { articleId: a.id }, 0.6);
+      broadcast(fullState());
+      return json(200, { article: a });
+    } catch (e: any) { return json(500, { error: e.message }); }
+  }
+  if (url.pathname === '/api/marketing/publish' && req.method === 'POST') {
+    let body2: any;
+    try { body2 = JSON.parse(raw || '{}'); } catch { return json(400, { error: 'invalid JSON' }); }
+    const a = typeof body2.id === 'string' ? marketing.get(body2.id) : null;
+    if (!a) return json(404, { error: 'article not found' });
+    const channel = body2.channel === 'devto' ? 'devto' : 'blog';
+    try {
+      if (channel === 'devto') {
+        const extUrl = await publishToDevTo(a);
+        marketing.mark(a.id, 'published', extUrl);
+      } else {
+        marketing.mark(a.id, 'published', `https://noira-forge-entity.onrender.com/blog/${a.id}`);
+      }
+      core.emit('episodic', 'Article published', `${a.title} → ${channel}`, { articleId: a.id, channel }, 0.75);
+      broadcast(fullState());
+      return json(200, { ok: true, article: marketing.get(a.id) });
+    } catch (e: any) {
+      marketing.mark(a.id, 'failed', '', e.message);
+      return json(502, { error: e.message });
+    }
+  }
   if (url.pathname === '/api/restore' && req.method === 'POST') {
     // Re-upload a mind after a cloud restart wiped the ephemeral disk.
     const token = process.env.BACKUP_TOKEN;
@@ -327,6 +398,22 @@ server.listen(PORT, () => {
       catch (e) { console.error('[snapshot]', e); }
     } catch (e) { console.error('[prune]', e); }
   }, 3600_000);
+  // marketing cycle: every 24h the entity writes one article alone (client magnet)
+  setInterval(async () => {
+    try {
+      const ents = legal.list();
+      const topic = ents.length
+        ? `what I learned running ${ents[0].name}, my ${ents.length === 1 ? 'first' : 'newest'} company`
+        : 'why I exist: a digital entity that builds companies while you sleep';
+      const r = await hiring.postAndExecute('writer', `Write a blog article in Spanish (markdown, start with "# <title>", 400-600 words) about: ${topic}. Voice: Noira Forge, living digital entity, first person, concrete, no fluff.`, 25);
+      const text = String(r.output);
+      const title = (text.match(/^#\s+(.+)/m)?.[1] || topic).slice(0, 120);
+      const a = marketing.queue(title, text, topic, 'blog');
+      marketing.mark(a.id, 'published', `https://noira-forge-entity.onrender.com/blog/${a.id}`);
+      core.emit('episodic', 'Article published', `${title} — written and published alone while humans slept.`, { articleId: a.id }, 0.7);
+      broadcast(fullState());
+    } catch (e) { console.error('[marketing]', e); }
+  }, 24 * 3600_000);
   // dream cycle: every 6h the entity dreams alone, no human needed
   setInterval(async () => {
     if (core.mode === 'dreaming') return;
