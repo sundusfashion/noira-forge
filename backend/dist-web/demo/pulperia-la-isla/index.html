@@ -89,17 +89,17 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
 <header class="hero" id="inicio">
   <canvas id="olas"></canvas>
   <div class="hero-inner">
-    <span class="kicker">PULPERÍA · FERROL · RÍA DE VERDAD</span>
-    <h1>El pulpo á feira<br><span class="sea">como el de siempre.</span></h1>
-    <p>Pulpo de la ría, cachelos, pemento de Herbón y Albariño bien frío. La pulpería de Ferrol que sabe a domingo. Reserva en 20 segundos.</p>
+    <span class="kicker">PULPERÍA · MUGARDOS · DESDE 1982</span>
+    <h1>El pulpo á mugardesa<br><span class="sea">como el de siempre.</span></h1>
+    <p>Pulpo de la ría de Ferrol, cachelos, desayunos con churros y comida para llevar. Reserva en 20 segundos, sin intermediarios.</p>
     <div class="cta-row">
       <a class="btn" href="#carta">Ver la carta</a>
       <a class="btn ghost" href="#reservar">Reservar mesa</a>
     </div>
     <div class="badges">
-      <div><b>4.9★</b>800 reseñas</div>
-      <div><b>30</b>años de oficio</div>
-      <div><b>200</b>raciones al día</div>
+      <div><b>4.6★</b>en Google</div>
+      <div><b>1982</b>abiertos desde</div>
+      <div><b>60</b>comensales</div>
     </div>
   </div>
 </header>
@@ -111,9 +111,10 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
   <div class="tabs">
     <button class="tab on" data-t="p">Pulpo</button>
     <button class="tab" data-t="m">Marisco</button>
-    <button class="tab" data-t="d">Postres</button>
+    <button class="tab" data-t="d">Desayunos</button>
   </div>
   <div id="platos"></div>
+  <p style="color:var(--muted);font-size:11.5px;margin-top:10px;font-family:Verdana">Precios orientativos · Los fijamos juntos con tu carta real</p>
 </section>
 
 <section id="galeria">
@@ -130,9 +131,9 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
 </section>
 
 <section id="opiniones">
-  <div class="k">LO QUE DICE FERROL</div>
+  <div class="k">LO QUE DICE LA GENTE</div>
   <h2>Opiniones</h2>
-  <p class="sub">Lo que cuentan los que ya vinieron.</p>
+  <p class="sub">4,6 de media en más de 100 reseñas de Google. Aquí irían tus reseñas reales, actualizadas solas.</p>
   <div class="rev-track" id="revs"></div>
 </section>
 
@@ -152,18 +153,18 @@ display:flex;align-items:center;justify-content:center;font-size:28px;text-decor
       <div class="ok" id="ok">✓ ¡Mesa pedida! Te escribimos por WhatsApp para confirmar. Gracias por confiar en La Isla.</div>
     </form>
     <div class="hours">
-      <h3>Horario</h3>
+      <h3>Horario real</h3>
       <ul>
-        <li><span>Martes – Jueves</span><span>12:30 – 15:30</span></li>
-        <li><span>Viernes – Sábado</span><span>12:30 – 15:30 · 20:00 – 23:00</span></li>
-        <li><span>Domingo</span><span>12:30 – 16:00</span></li>
+        <li><span>Lun – Vie (invierno)</span><span>8:00 – 16:00 · 19:00 – 23:00</span></li>
+        <li><span>Sáb – Dom (invierno)</span><span>8:00 – 23:00</span></li>
+        <li><span>Verano</span><span>8:00 – 23:00 todos los días</span></li>
       </ul>
-      <p style="margin-top:16px;color:var(--muted);font-size:13.5px">📍 Ferrol · Ración de pulpo 14,50 € · Menú 16 €</p>
+      <p style="margin-top:16px;color:var(--muted);font-size:13.5px">Avda. do Mar 40 Bajo, Mugardos · 981 471 028 · Comida desde 13:00 · Cena desde 19:00</p>
     </div>
   </div>
 </section>
 
-<footer>Pulpería La Isla · Ferrol · Demo de Noira · Visible 24h, luego se apaga sola</footer>
+<footer>Pulpería La Isla · Avda. do Mar 40, Mugardos · 981 471 028 · Demo de Noira · Visible 24h, luego se apaga sola<br><span style="font-size:11px">Instagram: @pulperialaisla</span></footer>
 <a class="wa" id="waFloat" href="#" aria-label="WhatsApp">✆</a>
 
 <script>
@@ -179,15 +180,15 @@ for(let i=0;i<40;i++){const x=(i*97+T*22)%W,y=H*.55+((i*53)%(H*.3))+Math.sin(T+i
 cx.fillStyle=`rgba(232,200,92,${.25+(i%5)*.1})`;cx.beginPath();cx.arc(x,y,1.6,0,7);cx.fill()}
 requestAnimationFrame(loop)})();
 // carta
-const CARTA={p:[["Pulpo á feira","Con cachelos, pemento de Herbón y AOVE","14,50 €"],["Pulpo a la brasa","Con parmentier trufada","16,00 €"],["Brocheta de pulpo","Con vinagreta de la casa","9,50 €"],["Ración para 2","Media ración + cachelos extra","21,00 €"]],
-m:[["Zamburiñas (6)","Al horno con jamón","13,00 €"],["Navajas","A la plancha con limón","12,50 €"],["Empanada de berberechos","Receta de la casa","4,50 €"],["Caldeirada","Para 2, con patata gallega","24,00 €"]],
-d:[["Filloas de nata","Con miel de la zona","5,50 €"],["Tarta de Santiago","Con helado","5,00 €"],["Arroz con leche","Quemado al momento","4,50 €"],["Café de pota","Como debe ser","2,80 €"]]};
+const CARTA={p:[["Pulpo á mugardesa","Fresco de la ría, pemento y AOVE","14,50 €"],["Pulpo á feira","Con cachelos","13,00 €"],["Pulpo a la brasa","Tres presentaciones","16,00 €"],["Ración para llevar","La misma calidad en casa","14,50 €"]],
+m:[["Zamburiñas","De la ría","13,00 €"],["Berberechos","Empanada de la casa","4,50 €"],["Caldeirada","Para 2","24,00 €"],["Pescados del día","Según lonja","16,00 €"]],
+d:[["Churros con chocolate","Desayuno clásico","3,50 €"],["Tostada pan del país","Con tomate o mantequilla","3,00 €"],["Bollería recién horneada","Cada mañana","2,50 €"],["Zumo natural","Naranja recién exprimida","3,00 €"]]};
 const box=document.getElementById('platos');
 function paint(t){box.innerHTML=CARTA[t].map((d,i)=>`<div class="dish" style="animation-delay:${i*70}ms"><div><h4>${d[0]}</h4><p>${d[1]}</p></div><div class="price">${d[2]}</div></div>`).join('')}
 paint('p');
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');paint(b.dataset.t)});
 // opiniones
-const OPS=[["★★★★★","El mejor pulpo de Ferrol, sin discusión. La web para reservar es comodísima.","— Sabela L."],["★★★★★","Ración generosa y trato de casa. Volvemos cada domingo.","— Marcos V."],["★★★★☆","Sitio de toda la vida, ahora con web moderna. Las zamburiñas, de 10.","— Uxía C."]];
+const OPS=[["4,6★","Media en Google con más de 100 reseñas","Tus clientes opinan aquí"],["1982","Abiertos desde hace 40 años","Tradición de Mugardos"],["60","Comensales y terraza","Aceptan reservas"]];
 document.getElementById('revs').innerHTML=OPS.map(o=>`<div class="rev"><div class="stars">${o[0]}</div><p>"${o[1]}"</p><b>${o[2]}</b></div>`).join('');
 // reveals
 const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}}),{threshold:.12});
