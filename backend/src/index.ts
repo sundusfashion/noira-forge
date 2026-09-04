@@ -119,6 +119,9 @@ async function handleChat(message: string): Promise<string> {
 
 import { CommandSchema, ChatSchema, InvestSchema, SpawnSchema, DreamSchema, RateLimiter, clientIp } from './api/guard.js';
 import { MarketingStore, mdToHtml } from './marketing/Marketing.js';
+import { getDemo, ensureShowcase, createDemo, isExpired, expiredPage } from './demos/Demos.js';
+
+ensureShowcase('casa-elena', 'Asador Casa Elena');
 
 const marketing = new MarketingStore('./data');
 
@@ -204,6 +207,16 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   }
   if (url.pathname === '/api/blog' && req.method === 'GET') {
     return json(200, { articles: marketing.list('published', 50) });
+  }
+  // Demo gate: expiring client demos die alone after their hours (showcase ones live forever).
+  if (req.method === 'GET' && url.pathname.startsWith('/demo/')) {
+    const slug = url.pathname.split('/')[2] || '';
+    const rec = getDemo(slug);
+    if (rec && isExpired(rec)) {
+      res.writeHead(410, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(expiredPage(rec.business));
+      return;
+    }
   }
   // Web mind: everything that is not /api/* or /health is the built frontend.
   if (req.method === 'GET' && !url.pathname.startsWith('/api/')) {
@@ -335,6 +348,19 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       marketing.mark(a.id, 'failed', '', e.message);
       return json(502, { error: e.message });
     }
+  }
+  if (url.pathname === '/api/demos' && req.method === 'POST') {
+    // Register a client demo with real expiry (used by the generator + WhatsApp outreach).
+    let b: any;
+    try { b = JSON.parse(raw || '{}'); } catch { return json(400, { error: 'invalid JSON' }); }
+    const slug = String(b.slug || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40);
+    const business = String(b.business || '').slice(0, 80);
+    const hours = Math.min(72, Math.max(1, Number(b.hours || 24)));
+    if (!slug || !business) return json(400, { error: 'slug + business required' });
+    const rec = createDemo(slug, business, hours, String(b.phone || '').slice(0, 30));
+    core.emit('episodic', 'Demo registered', `${business} → /demo/${slug} (dies in ${hours}h)`, { demo: rec }, 0.7);
+    broadcast(fullState());
+    return json(200, { demo: rec, url: `https://noira-forge-entity.onrender.com/demo/${slug}/` });
   }
   if (url.pathname === '/api/restore' && req.method === 'POST') {
     // Re-upload a mind after a cloud restart wiped the ephemeral disk.
