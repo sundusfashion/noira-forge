@@ -222,22 +222,6 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       return json(200, { count: leads.length, leads, stale });
     } catch (e: any) { return json(502, { error: `leads: ${e.message}` }); }
   }
-  if (url.pathname === '/api/leads/seed' && req.method === 'POST') {
-    // Bulk-import leads from a network that can reach Overpass (uses BACKUP_TOKEN).
-    const token = process.env.BACKUP_TOKEN;
-    if (token && req.headers['x-backup-token'] !== token) return json(401, { error: 'backup token required' });
-    try {
-      const b = JSON.parse(raw || '{}');
-      if (!Array.isArray(b.leads)) return json(400, { error: 'leads[] required' });
-      const clean = b.leads.filter((l: any) => l && l.name).slice(0, 500).map((l: any) => ({
-        name: String(l.name).slice(0, 80), sector: String(l.sector || 'negocio').slice(0, 30),
-        lat: Number(l.lat) || 0, lon: Number(l.lon) || 0, tags: {},
-      }));
-      const prev = loadCache().leads;
-      saveCache([...clean, ...prev.filter(p => !clean.some((c: any) => c.name === p.name))]);
-      return json(200, { ok: true, imported: clean.length, cached: loadCache().leads.length });
-    } catch { return json(400, { error: 'invalid JSON' }); }
-  }
   // Sector media (Pexels, free): coherent photos + videos per business type.
   if (url.pathname === '/api/media' && req.method === 'GET') {
     if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
@@ -401,6 +385,22 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     core.emit('episodic', 'Demo registered', `${business} → /demo/${slug} (dies in ${hours}h)`, { demo: rec }, 0.7);
     broadcast(fullState());
     return json(200, { demo: rec, url: `https://noira-forge-entity.onrender.com/demo/${slug}/` });
+  }
+  if (url.pathname === '/api/leads/seed' && req.method === 'POST') {
+    // Bulk-import leads from a network that can reach Overpass (uses BACKUP_TOKEN).
+    const token = process.env.BACKUP_TOKEN;
+    if (token && req.headers['x-backup-token'] !== token) return json(401, { error: 'backup token required' });
+    try {
+      const b = JSON.parse(raw || '{}');
+      if (!Array.isArray(b.leads)) return json(400, { error: 'leads[] required' });
+      const clean = b.leads.filter((l: any) => l && l.name).slice(0, 500).map((l: any) => ({
+        name: String(l.name).slice(0, 80), sector: String(l.sector || 'negocio').slice(0, 30),
+        lat: Number(l.lat) || 0, lon: Number(l.lon) || 0, tags: {},
+      }));
+      const prev = loadCache().leads;
+      saveCache([...clean, ...prev.filter(p => !clean.some((c: any) => c.name === p.name))]);
+      return json(200, { ok: true, imported: clean.length, cached: loadCache().leads.length });
+    } catch { return json(400, { error: 'invalid JSON' }); }
   }
   if (url.pathname === '/api/restore' && req.method === 'POST') {
     // Re-upload a mind after a cloud restart wiped the ephemeral disk.
