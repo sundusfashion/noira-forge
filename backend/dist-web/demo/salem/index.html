@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salem's Café — Tu café de barrio en Ferrol</title>
+<meta name="description" content="Salem's Café en Venezuela 69, Ferrol: desayunos, café para llevar, pinchos. Encarga por WhatsApp.">
+<style>
+:root{--bg:#120b06;--coal:#1d1209;--cof:#c98a3d;--gold:#e8b64c;--cream:#f7ecdb;--muted:#c2a586;--line:rgba(255,255,255,.1);
+--font-d:'Syne',Verdana,sans-serif;--font-b:Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-b);overflow-x:hidden}
+a{color:inherit}
+.demo-bar{position:sticky;top:0;z-index:60;background:linear-gradient(90deg,#5e3a12,#c98a3d,#5e3a12);color:#fff6e6;
+text-align:center;font-family:Verdana,sans-serif;font-size:12.5px;font-weight:bold;padding:10px 14px}
+.demo-bar b{background:#1c1005;color:#ffe9b0;padding:2px 10px;border-radius:20px;margin-left:8px}
+.nav{position:sticky;top:41px;z-index:50;display:flex;justify-content:space-between;align-items:center;
+padding:14px 26px;background:rgba(18,11,6,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--font-d);font-weight:800;font-size:19px;letter-spacing:2px}
+.brand span{color:var(--cof)}
+.links{display:flex;gap:22px;font-family:Verdana,sans-serif;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase}
+.links a{text-decoration:none;color:var(--muted)}
+.links a:hover{color:var(--gold)}
+.btn{display:inline-block;background:linear-gradient(180deg,#e0a558,#b06f24);color:#1c1005;text-decoration:none;
+font-family:Verdana,sans-serif;font-weight:bold;font-size:13px;letter-spacing:1px;padding:13px 28px;border-radius:12px;border:none;cursor:pointer;
+box-shadow:0 10px 30px rgba(201,138,61,.35);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.35);box-shadow:none;color:var(--cream)}
+.hero{position:relative;min-height:92vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;background:#000}
+.hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(18,11,6,.55) 60%,var(--bg));pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:860px;padding:60px 22px}
+.open-pill{display:inline-flex;align-items:center;gap:8px;font-family:Verdana,sans-serif;font-size:11px;letter-spacing:2px;
+padding:8px 18px;border-radius:999px;margin-bottom:20px;border:1px solid}
+.open-pill .dot{width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse 1.8s infinite}
+.open-pill.open{color:#5fe8ab;border-color:rgba(0,200,120,.5);background:rgba(0,200,120,.1)}
+.open-pill.closed{color:#ff9db0;border-color:rgba(255,45,85,.5);background:rgba(255,45,85,.1)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-family:var(--font-d);font-size:clamp(42px,8vw,88px);line-height:1.02;font-weight:800;text-shadow:0 4px 40px rgba(0,0,0,.7)}
+.hero h1 .cafe{background:linear-gradient(100deg,#ffe9b0,var(--cof) 60%,#7a4a12);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:#e8d9c4;font-size:clamp(15px,2.4vw,19px);margin:20px auto 30px;max-width:600px;line-height:1.65;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.badges{display:flex;gap:26px;justify-content:center;margin-top:36px;flex-wrap:wrap;font-family:Verdana,sans-serif;font-size:12.5px;color:#e8d9c4}
+.badges b{display:block;font-size:24px;color:#fff;font-family:var(--font-d)}
+section{padding:70px 26px;max-width:1100px;margin:0 auto}
+.k{font-family:Verdana,sans-serif;font-size:11px;letter-spacing:4px;color:var(--cof);margin-bottom:8px}
+h2{font-family:var(--font-d);font-size:clamp(28px,5vw,46px);margin-bottom:14px}
+.sub{color:var(--muted);margin-bottom:30px;max-width:620px;line-height:1.7}
+.tabs{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+.tab{font-family:Verdana,sans-serif;font-size:12.5px;letter-spacing:1px;padding:10px 22px;border-radius:999px;cursor:pointer;
+background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--muted)}
+.tab.on{background:linear-gradient(180deg,#e0a558,#b06f24);color:#1c1005;border-color:transparent;font-weight:bold}
+.dish{display:flex;justify-content:space-between;gap:14px;padding:15px 4px;border-bottom:1px dashed rgba(255,255,255,.14);animation:fadeUp .4s both}
+.dish h4{font-size:17px}.dish p{color:var(--muted);font-size:13.5px;margin-top:3px}
+.price{font-family:var(--font-d);font-weight:800;color:var(--gold);font-size:18px;white-space:nowrap}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.grid img{width:100%;height:230px;object-fit:cover;border-radius:14px;transition:transform .25s}
+.grid img:hover{transform:scale(1.04)}
+.rev-track{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.rev{background:var(--coal);border:1px solid var(--line);border-radius:16px;padding:22px}
+.rev .stars{color:var(--gold);letter-spacing:3px;margin-bottom:10px}
+.rev p{font-style:italic;line-height:1.65;color:#e5d5bd}
+.rev b{display:block;margin-top:12px;font-family:Verdana,sans-serif;font-size:12px;color:var(--muted)}
+.book{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+form{background:var(--coal);border:1px solid var(--line);border-radius:18px;padding:26px;display:grid;gap:12px}
+label{font-family:Verdana,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+input,select{background:#000;border:1px solid rgba(255,255,255,.16);color:#fff;padding:12px 14px;border-radius:10px;font-size:14px;width:100%;outline:none}
+input:focus,select:focus{border-color:var(--cof)}
+.ok{display:none;background:rgba(0,200,120,.1);border:1px solid #00c878;color:#5fe8ab;padding:16px;border-radius:12px;font-size:14px}
+.hours{background:linear-gradient(160deg,rgba(201,138,61,.12),transparent);border:1px solid rgba(201,138,61,.3);border-radius:18px;padding:26px}
+.hours h3{font-family:var(--font-d);margin-bottom:14px}
+.hours li{list-style:none;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;color:var(--muted);line-height:1.6}
+footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;color:var(--muted);font-size:13px;font-family:Verdana,sans-serif}
+.wa{position:fixed;right:20px;bottom:20px;z-index:55;width:58px;height:58px;border-radius:50%;background:#25d366;
+display:flex;align-items:center;justify-content:center;font-size:28px;text-decoration:none;box-shadow:0 12px 30px rgba(37,211,102,.45)}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+.reveal.in{opacity:1;transform:none}
+@media(max-width:760px){.links{display:none}.book{grid-template-columns:1fr}.nav{top:62px}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">⚡ WEB DEMO para Salem's Café · Visible 24h · ¿Te gusta? <a id="demoCta" href="#" style="color:#1c1005"><b>Escríbenos por WhatsApp</b></a></div>
+
+<nav class="nav">
+  <div class="brand">SALEM'S <span>CAFÉ</span></div>
+  <div class="links"><a href="#inicio">Inicio</a><a href="#carta">Carta</a><a href="#local">Local</a><a href="#barrio">Barrio</a><a href="#pedir">Pedir</a></div>
+  <a class="btn" href="#pedir">Pedir para llevar</a>
+</nav>
+
+<header class="hero" id="inicio">
+  <video autoplay muted loop playsinline poster="https://images.pexels.com/photos/23384593/pexels-photo-23384593.jpeg?auto=compress&cs=tinysrgb&h=650&w=940">
+    <source src="https://videos.pexels.com/video-files/33701530/14314237_960_540_24fps.mp4" type="video/mp4">
+  </video>
+  <div class="hero-inner">
+    <div class="open-pill open" id="openPill"><span class="dot"></span><span id="openTxt">ABIERTO AHORA</span></div>
+    <h1>Tu café de cada día,<br><span class="cafe">en Venezuela 69.</span></h1>
+    <p>Desayunos con bollería, café para llevar, pinchos y tés. El bar de barrio que te llama por tu nombre. Pide sin llamar.</p>
+    <div class="cta-row">
+      <a class="btn" href="#carta">Ver la carta</a>
+      <a class="btn ghost" href="#pedir">Pedir para llevar</a>
+    </div>
+    <div class="badges">
+      <div><b>7:30</b>abrimos cada mañana</div>
+      <div><b>2 min</b>tu café listo</div>
+      <div><b>0</b>colas si pides aquí</div>
+    </div>
+  </div>
+</header>
+
+<section id="carta">
+  <div class="k">DESAYUNOS · CAFÉS · PINCHOS</div>
+  <h2>La carta</h2>
+  <p class="sub">Lo de siempre, bien hecho. Toca cada pestaña.</p>
+  <div class="tabs">
+    <button class="tab on" data-t="d">Desayunos</button>
+    <button class="tab" data-t="c">Cafés</button>
+    <button class="tab" data-t="p">Pinchos</button>
+  </div>
+  <div id="platos"></div>
+  <p style="color:var(--muted);font-size:11.5px;margin-top:10px;font-family:Verdana">Precios orientativos · Los fijamos juntos con tu carta real</p>
+</section>
+
+<section id="local">
+  <div class="k">ASÍ ES SALEM'S</div>
+  <h2>El local</h2>
+  <p class="sub">Tu sitio en Venezuela 69, Ferrol.</p>
+  <div class="grid">
+    <img loading="lazy" src="https://images.pexels.com/photos/23384593/pexels-photo-23384593.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Café">
+    <img loading="lazy" src="https://images.pexels.com/photos/35361009/pexels-photo-35361009.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Barra">
+    <img loading="lazy" src="https://images.pexels.com/photos/23384638/pexels-photo-23384638.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Desayuno">
+    <img loading="lazy" src="https://images.pexels.com/photos/23384632/pexels-photo-23384632.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Tardeo">
+  </div>
+  <p style="color:var(--muted);font-size:11.5px;margin-top:10px;font-family:Verdana">Fotos de muestra · En tu web pondríamos fotos de tu local</p>
+</section>
+
+<section id="barrio">
+  <div class="k">EL BAR DE BARRIO</div>
+  <h2>Ferrol desayuna aquí</h2>
+  <p class="sub">Café para llevar, prensa del día y pinchos que vuelan.</p>
+  <div class="rev-track" id="revs"></div>
+</section>
+
+<section id="pedir">
+  <div class="k">SIN LLAMAR, SIN COLA</div>
+  <h2>Pide para llevar</h2>
+  <p class="sub">Lo pides aquí y lo recoges listo. Te avisamos por WhatsApp.</p>
+  <div class="book">
+    <form id="form">
+      <div><label>Nombre</label><input required placeholder="Sabela López"></div>
+      <div><label>Teléfono / WhatsApp</label><input required placeholder="600 123 456"></div>
+      <div><label>Tu pedido</label><select><option>Desayuno completo</option><option>Café + pincho</option><option>Para llevar (varios)</option><option>Solo café</option></select></div>
+      <button class="btn" type="submit">Pedir ahora</button>
+      <div class="ok" id="ok">✓ ¡Pedido recibido! Te avisamos por WhatsApp cuando esté listo.</div>
+    </form>
+    <div class="hours">
+      <h3>Salem's Café</h3>
+      <ul>
+        <li>Venezuela 69 Bajo, 15404 Ferrol. Desayunos con bollería, cafés para llevar, tés e infusiones, pinchos.</li>
+        <li>690 939 061. Horario orientativo 7:30 – 20:30 (lo confirmamos juntos).</li>
+      </ul>
+      <p style="margin-top:16px;color:var(--muted);font-size:13.5px">Pide desde esta web y sáltate la cola de las 8.</p>
+    </div>
+  </div>
+</section>
+
+<footer>Salem's Café · Venezuela 69, Ferrol · 690 939 061 · Demo de Noira · Visible 24h, luego se apaga sola</footer>
+<a class="wa" id="waFloat" href="#" aria-label="WhatsApp">✆</a>
+
+<script>
+// abierto/cerrado inteligente (orientativo 7:30-20:30)
+(function(){const h=new Date().getHours(),m=new Date().getMinutes(),t=h+m/60,open=t>=7.5&&t<20.5;
+const p=document.getElementById('openPill');p.classList.remove('open','closed');p.classList.add(open?'open':'closed');
+document.getElementById('openTxt').textContent=open?'ABIERTO AHORA · PIDE SIN COLA':'CERRADO · ABRIMOS 7:30'})();
+// carta
+const CARTA={d:[["Desayuno completo","Café + tostada + zumo","4,50 €"],["Tostada con tomate","Pan del día, AOVE","2,80 €"],["Bollería","Croissant, napolitana, ensaimada","desde 1,50 €"],["Chocolate con churros","De fin de semana","4,00 €"]],
+c:[["Café con leche","El de siempre, bien tirado","1,60 €"],["Capuchino","Con cacao","2,20 €"],["Té e infusiones","Carta completa","2,00 €"],["Para llevar","Tu café en vaso, +0,20 €","—"]],
+p:[["Pincho de tortilla","La de verdad","2,50 €"],["Pincho del día","Pregunta en barra","2,80 €"],["Bocata pequeño","Jamón, queso, vegetal","3,50 €"],["Empanada","Porción generosa","3,00 €"]]};
+const box=document.getElementById('platos');
+function paint(t){box.innerHTML=CARTA[t].map((d,i)=>`<div class="dish" style="animation-delay:${i*70}ms"><div><h4>${d[0]}</h4><p>${d[1]}</p></div><div class="price">${d[2]}</div></div>`).join('')}
+paint('d');
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');paint(b.dataset.t)});
+// barrio
+const OPS=[["☕","Desayunos con bollería y café para llevar","Cada mañana"],["🥖","Pinchos que vuelan a mediodía","De barrio"],["★","El café de Venezuela 69","Ferrol"]];
+document.getElementById('revs').innerHTML=OPS.map(o=>`<div class="rev"><div class="stars">${o[0]}</div><p>"${o[1]}"</p><b>${o[2]}</b></div>`).join('');
+// reveals
+const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('section,.hero-inner').forEach(el=>{el.classList.add('reveal');io2.observe(el)});
+// pedido real + whatsapp nuestro
+const SLUG='salem';
+fetch('/api/demos/'+SLUG).then(r=>r.json()).then(cfg=>{
+  if(cfg.ownerPhone){
+    const url='https://wa.me/'+cfg.ownerPhone+'?text='+encodeURIComponent(cfg.waText||'Hola, me interesa la web demo');
+    document.getElementById('demoCta').href=url;
+    document.getElementById('waFloat').href=url;
+  }
+}).catch(()=>{});
+document.getElementById('form').onsubmit=e=>{
+  e.preventDefault();
+  const f=e.target,btn=f.querySelector('button');
+  const data={slug:SLUG,nombre:f.querySelector('input').value,telefono:f.querySelectorAll('input')[1].value,
+    dia:'',personas:f.querySelector('select').value};
+  btn.textContent='Enviando…';
+  fetch('/api/demo-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(r=>{if(!r.ok)throw 0;document.getElementById('ok').style.display='block';btn.textContent='✓ Pedido hecho'})
+    .catch(()=>{document.getElementById('ok').style.display='block';btn.textContent='✓ Pedido hecho'});
+};
+</script>
+</body>
+</html>
