@@ -641,14 +641,15 @@ server.listen(PORT, () => {
       catch (e) { console.error('[snapshot]', e); }
     } catch (e) { console.error('[prune]', e); }
   }, 3600_000);
-  // agency cycle: up to 10 new contacts/day (one every ~2h), human pace, business hours salt.
+  // agency cycle: warmup-safe ramp (week1: 5/day → week4: 25/day). Never spike a fresh inbox.
+  const DAILY_CAP = Number(process.env.DAILY_CAP || '5');
   setInterval(async () => {
     if (AUTONOMY_MODE !== 'full') return;
     try {
       const today = new Date().toISOString().slice(0, 10);
       const sentToday = marketing.listOutreach('sent', 500)
         .filter(o => o.sent_at && new Date(o.sent_at).toISOString().slice(0, 10) === today).length;
-      if (sentToday >= 10) { console.log('[agency] daily cap reached'); return; }
+      if (sentToday >= DAILY_CAP) { console.log('[agency] daily cap reached'); return; }
       const r = await agencyIteration();
       console.log('[agency]', r);
     } catch (e) { console.error('[agency]', (e as any)?.message || e); }
