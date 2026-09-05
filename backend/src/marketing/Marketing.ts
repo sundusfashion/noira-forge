@@ -30,6 +30,7 @@ export class MarketingStore {
         followups INTEGER DEFAULT 0, created_at INTEGER NOT NULL
       );
       CREATE INDEX IF NOT EXISTS idx_out_status ON outreach(status);
+      CREATE TABLE IF NOT EXISTS settings (k TEXT PRIMARY KEY, v TEXT NOT NULL DEFAULT '');
       CREATE TABLE IF NOT EXISTS targets (
         email TEXT PRIMARY KEY, business TEXT NOT NULL, sector TEXT DEFAULT 'negocio',
         phone TEXT DEFAULT '', address TEXT DEFAULT '', demo_slug TEXT DEFAULT '',
@@ -90,6 +91,13 @@ export class MarketingStore {
     return status
       ? this.db.prepare(`SELECT * FROM outreach WHERE status=? ORDER BY created_at DESC LIMIT ?`).all(status, limit)
       : this.db.prepare(`SELECT * FROM outreach ORDER BY created_at DESC LIMIT ?`).all(limit);
+  }
+  getSetting(k: string): string | null {
+    const r: any = this.db.prepare(`SELECT v FROM settings WHERE k=?`).get(k);
+    return r ? r.v : null;
+  }
+  setSetting(k: string, v: string) {
+    this.db.prepare(`INSERT INTO settings (k, v) VALUES (?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v`).run(k, v);
   }
   outreachStats(): Record<string, number> {
     const rows: any[] = this.db.prepare(`SELECT status, COUNT(*) as c FROM outreach GROUP BY status`).all();

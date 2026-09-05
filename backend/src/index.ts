@@ -607,6 +607,54 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     }
     return json(200, { ok: true, added, perCity, targets: marketing.targetStats() });
   }
+  // Autonomous refill: SerpApi discovers (works from cloud), business websites yield emails.
+  // 1 city/week ≈ 4 SerpApi calls/month. Self-sustaining lead supply, zero humans.
+  const REFILL_CITIES = [
+    ['Madrid', 40.4168, -3.7038], ['Barcelona', 41.3874, 2.1686], ['Valencia', 39.4699, -0.3763],
+    ['Sevilla', 37.3891, -5.9845], ['Bilbao', 43.2630, -2.9349], ['Malaga', 36.7213, -4.4214],
+    ['Zaragoza', 41.6488, -0.8891], ['Vigo', 42.2406, -8.7207], ['Santiago', 42.8805, -8.5457],
+    ['Gijon', 43.5322, -5.6611], ['Coruna', 43.3713, -8.3960], ['Granada', 37.1775, -3.5986],
+    ['Cordoba', 37.8882, -4.7794], ['Alicante', 38.3452, -0.4810], ['Murcia', 37.9922, -1.1307],
+    ['Valladolid', 41.6523, -4.7245], ['Burgos', 42.3439, -3.6969], ['Salamanca', 40.9701, -5.6635],
+    ['Santander', 43.4623, -3.8099], ['Pamplona', 42.8125, -1.6458],
+  ];
+  const REFILL_QUERIES = ['restaurante', 'cafeteria', 'peluqueria', 'clinica dental', 'tienda de ropa'];
+
+  async function refillOnce(): Promise<string> {
+    const { searchPlaces } = await import('./enrich/SerpApi.js');
+    const { extractEmailsFromSite } = await import('./enrich/WebEmail.js');
+    const ci = Number(marketing.getSetting('refill_city') || '0');
+    const qi = Number(marketing.getSetting('refill_query') || '0');
+    const [city, lat, lon] = REFILL_CITIES[ci % REFILL_CITIES.length];
+    const query = `${REFILL_QUERIES[qi % REFILL_QUERIES.length]} ${city}`;
+    const ll = `@${lat},${lon},13z`;
+    const { places } = await searchPlaces(query, ll, 'es');
+    let added = 0;
+    for (const p of places.slice(0, 20)) {
+      if (!p.website) continue;
+      try {
+        const emails = await extractEmailsFromSite(p.website);
+        for (const email of emails.slice(0, 1)) {
+          marketing.upsertTarget({ email, business: String(p.title || 'Negocio').slice(0, 80), sector: 'negocio', phone: String(p.phone || ''), address: String(p.address || '').slice(0, 120) });
+          added++;
+        }
+      } catch {}
+      if (added >= 8) break;
+    }
+    marketing.setSetting('refill_city', String((ci + 1) % REFILL_CITIES.length));
+    if ((ci + 1) % REFILL_CITIES.length === 0) marketing.setSetting('refill_query', String(qi + 1));
+    const staggered = marketing.stagger();
+    core.emit('episodic', 'Refill complete', `${city}: ${added} new emails from business websites. Queue re-staggered (${staggered} pending).`, {}, 0.7);
+    broadcast(fullState());
+    return `${city}: +${added} emails, ${staggered} queued`;
+  }
+
+  if (url.pathname === '/api/leads/refill' && req.method === 'POST') {
+    const token = process.env.BACKUP_TOKEN;
+    if (token && req.headers['x-backup-token'] !== token) return json(401, { error: 'backup token required' });
+    try { return json(200, { result: await refillOnce() }); }
+    catch (e: any) { ring('refill', e); return json(500, { error: e.message }); }
+  }
   if (url.pathname === '/api/agency/run' && req.method === 'POST') {
     // Manual trigger of one autonomous cycle (backup token). The scheduler runs it daily alone.
     const token = process.env.BACKUP_TOKEN;
@@ -701,6 +749,14 @@ server.listen(PORT, () => {
       console.log('[agency]', r);
     } catch (e) { console.error('[agency]', (e as any)?.message || e); }
   }, 2 * 3600_000);
+  // refill cycle: weekly autonomous lead harvest (rotates 20 cities × 5 queries).
+  setInterval(async () => {
+    if (AUTONOMY_MODE !== 'full') return;
+    try {
+      const r = await refillOnce();
+      console.log('[refill]', r);
+    } catch (e) { ring('refill-scheduler', e); }
+  }, 7 * 86400_000);
   // outreach cycle: daily inbox read (replies) + one gentle follow-up per silent lead.
   setInterval(async () => {
     try {
