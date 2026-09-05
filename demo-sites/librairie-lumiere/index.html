@@ -3,33 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Librairie Lumière Future — Fès</title>
-<meta name="description" content="Librairie Lumière Future à Fès : livres, photocopies, impression. Commandez sur WhatsApp. Démo Noira, visible 24h.">
-<meta property="og:title" content="Librairie Lumiere Future - Fes">
-<meta property="og:description" content="Commandez sur WhatsApp, recuperez en 10 minutes.">
+<title>Librairie Lumière Future — Livres, impression & papeterie à Fès</title>
+<meta name="description" content="Librairie Lumière Future, 16 Lotis Mohammed, Fès. 4,9/5 sur Google. Manuels, romans, photocopies en 10 minutes. Commandez sur WhatsApp.">
+<meta property="og:title" content="Librairie Lumière Future — Fès">
+<meta property="og:description" content="4,9/5 sur Google · Commandez sur WhatsApp, récupérez en 10 minutes.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmheTfzWXzEuwKAvYgCF0lrvAr1sqZT1J_CpPXezX3NF0AjDiJgokTHCLrksNPQawPYcLUaknDN6egihg6BCgW5NzQAIIjNhT0pWwi1_EjsPVdr8wVWmhta7laCknafzk9ES3QRIA=w714-h640-k-no">
 <meta name="theme-color" content="#f5eedd">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BookStore","name":"Librairie Lumiere Future",
-"telephone":"+212638016679","address":{"@type":"PostalAddress","streetAddress":"16 Lotis Mohammed","postalCode":"30000","addressLocality":"Fes","addressCountry":"MA"},
-"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"57"}}
+{"@context":"https://schema.org","@type":"BookStore","name":"Librairie Lumière Future",
+"telephone":"+212638016679","address":{"@type":"PostalAddress","streetAddress":"16 Lotis Mohammed","postalCode":"30000","addressLocality":"Fès","addressCountry":"MA"},
+"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"57"},"openingHours":"Mo-Sa 09:00-23:30"}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#f5eedd;--ink:#1c1710;--gold:#9a6b1e;--green:#2e4a25;--line:rgba(28,23,16,.14)}
+:root{--paper:#f5eedd;--ink:#1c1710;--gold:#9a6b1e;--goldsoft:#e8c85c;--green:#2e4a25;--mut:#6a5f4c;--line:rgba(28,23,16,.14)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);font-family:'Fraunces',Georgia,serif;overflow-x:hidden;
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E")}
 a{color:inherit}
+::selection{background:var(--ink);color:var(--paper)}
+/* loader */
+#loader{position:fixed;inset:0;z-index:200;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;
+align-items:center;justify-content:center;gap:18px;transition:opacity .6s;font-family:'Space Grotesk',Verdana,sans-serif}
+#loader.off{opacity:0;pointer-events:none}
+#loader .mark{font-size:15px;letter-spacing:8px;color:var(--goldsoft)}
+#loader .bar{width:180px;height:2px;background:rgba(255,255,255,.15);overflow:hidden;border-radius:2px}
+#loader .bar i{display:block;height:100%;width:40%;background:var(--goldsoft);animation:ld 1s infinite ease-in-out}
+@keyframes ld{0%{transform:translateX(-100%)}100%{transform:translateX(450%)}}
+/* demo bar */
 .demo-bar{position:sticky;top:0;z-index:60;background:var(--ink);color:var(--paper);text-align:center;
 font-family:'Space Grotesk',Verdana,sans-serif;font-size:12px;letter-spacing:.5px;padding:10px 14px}
-.demo-bar b{background:var(--gold);color:#000;padding:2px 10px;border-radius:20px;margin-left:8px}
-.demo-bar a{color:var(--gold)}
+.demo-bar b{background:var(--goldsoft);color:#000;padding:2px 10px;border-radius:20px;margin-left:8px}
+.demo-bar a{color:var(--goldsoft)}
+/* nav */
 .nav{position:sticky;top:41px;z-index:50;display:flex;justify-content:space-between;align-items:center;
-padding:16px 30px;background:rgba(245,238,221,.88);backdrop-filter:blur(12px);border-bottom:2px solid var(--ink)}
+padding:16px 30px;background:rgba(245,238,221,.9);backdrop-filter:blur(12px);border-bottom:2px solid var(--ink)}
 .brand{font-family:'Space Grotesk',Verdana,sans-serif;font-weight:700;font-size:17px;letter-spacing:3px}
 .brand span{color:var(--gold)}
 .links{display:flex;gap:26px;font-family:'Space Grotesk',Verdana,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase}
@@ -40,64 +51,96 @@ padding:16px 30px;background:rgba(245,238,221,.88);backdrop-filter:blur(12px);bo
 font-family:'Space Grotesk',Verdana,sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:15px 32px;border-radius:999px;border:none;cursor:pointer;transition:transform .15s}
 .btn:hover{transform:translateY(-2px)}
 .btn.gold{background:linear-gradient(180deg,#d9a83f,#9a6b1e);color:#fff}
-/* hero asymétrique */
-.hero{max-width:1200px;margin:0 auto;padding:70px 30px 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center}
+/* hero */
+.hero{max-width:1200px;margin:0 auto;padding:64px 30px 30px;display:grid;grid-template-columns:1.02fr .98fr;gap:48px;align-items:center}
 .kicker{font-family:'Space Grotesk',Verdana,sans-serif;font-size:11px;letter-spacing:5px;color:var(--gold);
 border:1px solid var(--gold);display:inline-block;padding:8px 18px;border-radius:999px;margin-bottom:24px}
-.hero h1{font-weight:900;font-size:clamp(46px,7.5vw,96px);line-height:.98;letter-spacing:-.01em}
+.hero h1{font-weight:900;font-size:clamp(48px,7.6vw,100px);line-height:.96;letter-spacing:-.015em}
 .hero h1 em{font-style:italic;font-weight:400;color:var(--green)}
-.hero p.lead{font-size:clamp(16px,2.4vw,20px);line-height:1.65;color:#4a4234;margin:24px 0 32px;max-width:520px}
+.hero .lead{font-size:clamp(16px,2.4vw,20px);line-height:1.65;color:#4a4234;margin:24px 0 32px;max-width:520px}
 .cta-row{display:flex;gap:12px;flex-wrap:wrap}
-.trust{display:flex;gap:28px;margin-top:38px;flex-wrap:wrap;font-family:'Space Grotesk',Verdana,sans-serif;font-size:12.5px;color:#6a5f4c}
-.trust b{display:block;font-size:26px;color:var(--ink)}
-.collage{position:relative;height:560px}
-.collage img{position:absolute;border-radius:14px;box-shadow:0 24px 60px rgba(28,23,16,.3);object-fit:cover}
-.collage img.i1{width:62%;height:72%;top:0;left:0;transform:rotate(-3deg)}
-.collage img.i2{width:46%;height:52%;bottom:0;right:0;transform:rotate(2.5deg);border:6px solid var(--paper)}
-.collage .stamp{position:absolute;bottom:8%;left:6%;background:var(--ink);color:var(--paper);border-radius:50%;
-width:120px;height:120px;display:flex;align-items:center;justify-content:center;text-align:center;
-font-family:'Space Grotesk',Verdana,sans-serif;font-size:11px;letter-spacing:1px;transform:rotate(-10deg);line-height:1.5}
+.trust{display:flex;gap:30px;margin-top:40px;flex-wrap:wrap;font-family:'Space Grotesk',Verdana,sans-serif;font-size:12.5px;color:var(--mut)}
+.trust b{display:block;font-size:27px;color:var(--ink)}
+.collage{position:relative;height:580px}
+.collage img{position:absolute;border-radius:16px;box-shadow:0 26px 60px rgba(28,23,16,.32);object-fit:cover}
+.collage .i1{width:63%;height:74%;top:0;left:0;transform:rotate(-3deg)}
+.collage .i2{width:47%;height:54%;bottom:0;right:0;transform:rotate(2.5deg);border:7px solid var(--paper)}
+.collage .stamp{position:absolute;bottom:9%;left:5%;background:var(--ink);color:var(--paper);border-radius:50%;
+width:124px;height:124px;display:flex;align-items:center;justify-content:center;text-align:center;
+font-family:'Space Grotesk',Verdana,sans-serif;font-size:11px;letter-spacing:1px;transform:rotate(-10deg);line-height:1.6}
+/* marquee */
+.marquee{overflow:hidden;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);background:var(--ink);color:var(--goldsoft)}
+.marquee-track{display:inline-flex;white-space:nowrap;padding:12px 0;animation:mslide 26s linear infinite;
+font-size:12px;letter-spacing:4px;font-weight:700;font-family:'Space Grotesk',Verdana,sans-serif}
+@keyframes mslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 /* sections */
-section{padding:70px 30px;max-width:1200px;margin:0 auto}
+section{padding:72px 30px;max-width:1200px;margin:0 auto}
 .k{font-family:'Space Grotesk',Verdana,sans-serif;font-size:11px;letter-spacing:4px;color:var(--gold);margin-bottom:10px}
-h2{font-size:clamp(30px,5vw,52px);font-weight:900;line-height:1.02;margin-bottom:14px}
+h2{font-size:clamp(30px,5vw,54px);font-weight:900;line-height:1.0;margin-bottom:14px}
 h2 em{font-style:italic;font-weight:400;color:var(--green)}
-.sub{color:#6a5f4c;margin-bottom:34px;max-width:620px;line-height:1.7;font-size:16px}
-/* rayonnages */
-.shelf{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0;border-top:3px solid var(--ink)}
-.book{padding:26px 22px;border-bottom:3px solid var(--ink);border-right:1px solid var(--line);transition:background .2s}
-.book:last-child{border-right:none}
-.book:hover{background:#efe4cd}
-.book .n{font-family:'Space Grotesk',Verdana,sans-serif;font-size:12px;letter-spacing:3px;color:var(--gold)}
-.book h4{font-size:21px;margin:10px 0 6px}
-.book p{color:#6a5f4c;font-size:14px;line-height:1.6}
-.book .row{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
-.price{font-weight:900;font-size:19px}
-.pedir{font-family:'Space Grotesk',Verdana,sans-serif;font-size:12px;font-weight:700;color:var(--green);text-decoration:none;border-bottom:2px solid var(--green)}
-.tabs{display:flex;gap:10px;margin-bottom:0;flex-wrap:wrap}
+.sub{color:var(--mut);margin-bottom:32px;max-width:640px;line-height:1.7;font-size:16px}
+/* rayons */
+.tabs{display:flex;gap:10px;margin-bottom:26px;flex-wrap:wrap}
 .tab{font-family:'Space Grotesk',Verdana,sans-serif;font-size:12.5px;letter-spacing:1px;padding:11px 24px;border-radius:999px;cursor:pointer;
 background:transparent;border:2px solid var(--ink);color:var(--ink)}
 .tab.on{background:var(--ink);color:var(--paper);font-weight:700}
+.shelf{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border-top:3px solid var(--ink)}
+.book{padding:26px 22px;border-bottom:3px solid var(--ink);border-right:1px solid var(--line);transition:background .2s}
+.book:last-child{border-right:none}
+.book:hover{background:#efe2c8}
+.book .n{font-family:'Space Grotesk',Verdana,sans-serif;font-size:12px;letter-spacing:3px;color:var(--gold)}
+.book h4{font-size:21px;margin:10px 0 6px}
+.book p{color:var(--mut);font-size:14px;line-height:1.6}
+.book .row{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.book img{width:100%;height:150px;object-fit:cover;border-radius:12px;margin-bottom:14px}
+.price{font-weight:900;font-size:19px}
+.pedir{font-family:'Space Grotesk',Verdana,sans-serif;font-size:12px;font-weight:700;color:var(--green);text-decoration:none;border-bottom:2px solid var(--green)}
+.fine{color:var(--mut);font-size:11.5px;margin-top:12px;font-family:Verdana,sans-serif}
 /* citation */
-.quote{background:var(--green);color:#f2ecdd;border-radius:24px;padding:60px 40px;text-align:center;margin:0 0 10px}
-.quote p{font-style:italic;font-size:clamp(20px,3.4vw,32px);line-height:1.5;max-width:760px;margin:0 auto}
-.quote b{display:block;margin-top:20px;font-family:'Space Grotesk',Verdana,sans-serif;font-size:12px;letter-spacing:3px;color:var(--gold)}
+.quote{background:var(--green);color:#f2ecdd;border-radius:26px;padding:64px 42px;text-align:center}
+.quote p{font-style:italic;font-size:clamp(20px,3.4vw,32px);line-height:1.5;max-width:780px;margin:0 auto}
+.quote b{display:block;margin-top:22px;font-family:'Space Grotesk',Verdana,sans-serif;font-size:12px;letter-spacing:3px;color:var(--goldsoft)}
+/* maison */
+.maison{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+.maison img.big{width:100%;height:460px;object-fit:cover;border-radius:22px;border:1px solid var(--line)}
+.maison p{line-height:1.85;font-size:16.5px;margin-bottom:16px;color:#3d3428}
+.maison p b{color:var(--green)}
+.chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:rgba(28,23,16,.15);
+border:2px solid var(--ink);border-radius:18px;overflow:hidden;margin-top:30px}
+.chiffres div{background:#fffdf6;padding:22px;text-align:center}
+.chiffres b{display:block;font-size:31px}
+.chiffres span{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mut);font-family:Verdana,sans-serif}
+/* galerie */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.grid figure{position:relative;margin:0;border-radius:16px;overflow:hidden}
+.grid figure:first-child{grid-column:span 2;grid-row:span 2}
+.grid img{width:100%;height:100%;min-height:220px;object-fit:cover;display:block;transition:transform .3s;cursor:zoom-in}
+.grid figure:first-child img{min-height:452px}
+.grid figure:hover img{transform:scale(1.05)}
+.grid figcaption{position:absolute;left:12px;bottom:10px;z-index:2;color:#fff;font-family:Verdana,sans-serif;font-size:11px;
+letter-spacing:1px;background:rgba(0,0,0,.55);padding:5px 12px;border-radius:999px}
+/* avis */
+.avis{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.avi{background:#fffdf6;border:2px solid var(--ink);border-radius:18px;padding:22px;box-shadow:5px 5px 0 var(--ink)}
+.avi .stars{color:var(--gold);letter-spacing:3px;margin-bottom:10px}
+.avi p{font-style:italic;line-height:1.65}
+.avi b{display:block;margin-top:12px;font-family:Verdana,sans-serif;font-size:12px;color:var(--mut)}
 /* visite */
 .visit{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
 form{background:#fffdf6;border:2px solid var(--ink);border-radius:20px;padding:28px;display:grid;gap:13px;box-shadow:8px 8px 0 var(--ink)}
-label{font-family:'Space Grotesk',Verdana,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6a5f4c}
+label{font-family:'Space Grotesk',Verdana,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
 input,select{background:#fff;border:2px solid var(--ink);color:var(--ink);padding:13px 15px;border-radius:10px;font-size:14px;width:100%;outline:none;font-family:Verdana,sans-serif}
 .ok{display:none;background:#e8f5e9;border:2px solid #2e7d32;color:#1b5e20;padding:16px;border-radius:12px;font-size:14px}
 .hours{background:var(--ink);color:var(--paper);border-radius:20px;padding:28px}
-.hours h3{font-family:'Space Grotesk',Verdana,sans-serif;letter-spacing:2px;margin-bottom:14px;color:var(--gold)}
+.hours h3{font-family:'Space Grotesk',Verdana,sans-serif;letter-spacing:2px;margin-bottom:14px;color:var(--goldsoft)}
 .hours li{list-style:none;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:14.5px;color:#d8cfb8}
 .mapframe{width:100%;height:240px;border:none;border-radius:14px;margin-top:16px}
-dl[data-faq]{max-width:680px}
+dl[data-faq]{max-width:680px;margin-top:26px}
 dl[data-faq] dt{padding:15px 0;border-bottom:2px solid var(--ink);font-weight:600;cursor:pointer;font-size:17px}
-dl[data-faq] dd{padding:6px 0 18px;color:#6a5f4c;line-height:1.7}
-footer{border-top:2px solid var(--ink);padding:32px 28px;text-align:center;color:#6a5f4c;font-size:13px;font-family:Verdana,sans-serif;line-height:2}
+dl[data-faq] dd{padding:6px 0 18px;color:var(--mut);line-height:1.7}
+footer{border-top:2px solid var(--ink);padding:32px 28px;text-align:center;color:var(--mut);font-size:13px;font-family:Verdana,sans-serif;line-height:2}
 .wa{position:fixed;right:20px;bottom:20px;z-index:55;width:58px;height:58px;border-radius:50%;background:#25d366;
-display:flex;align-items:center;justify-content:center;font-size:28px;text-decoration:none;box-shadow:0 12px 30px rgba(37,211,102,.45);color:#fff}
+display:flex;align-items:center;justify-content:center;font-size:28px;text-decoration:none;color:#fff;box-shadow:0 12px 30px rgba(37,211,102,.45)}
 .orderbar{position:fixed;left:0;right:0;bottom:0;z-index:54;display:flex;justify-content:center;padding:10px 14px 12px;
 background:linear-gradient(180deg,transparent,rgba(245,238,221,.94) 45%);pointer-events:none}
 .orderbar a{pointer-events:auto;flex:1;max-width:440px;text-align:center;background:var(--ink);color:var(--paper);
@@ -105,15 +148,21 @@ text-decoration:none;font-family:'Space Grotesk',Verdana,sans-serif;font-weight:
 .reveal{opacity:0;transform:translateY(34px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
 .reveal.in{opacity:1;transform:none}
 .progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--ink);z-index:99}
-@media(max-width:900px){.hero{grid-template-columns:1fr}.collage{height:380px}.visit{grid-template-columns:1fr}}
-@media(max-width:760px){.demo-bar{position:static}.nav{top:0}.links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--paper);flex-direction:column;padding:14px 26px 20px;gap:16px;border-bottom:2px solid var(--ink)}.links.open{display:flex}.burger{display:block}.wa{bottom:84px}section{padding:56px 20px}}
-.herovideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22;pointer-events:none}.hero{position:relative}.hero>div:not(.herovideo){position:relative;z-index:2}.lead::first-letter{font-size:2.6em;float:left;line-height:.85;padding-right:8px;color:var(--gold);font-weight:900}
+.dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:58;display:flex;flex-direction:column;gap:10px}
+.dots a{width:9px;height:9px;border-radius:50%;background:rgba(28,23,16,.3);transition:all .2s}
+.dots a.on{background:var(--gold);box-shadow:0 0 10px var(--gold);transform:scale(1.35)}
+.videoband{position:relative;height:52vh;min-height:300px;overflow:hidden}
+.videoband video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.videoband span{position:absolute;left:26px;bottom:20px;z-index:2;color:#fff;font-family:Verdana,sans-serif;font-size:12px;letter-spacing:3px;background:rgba(0,0,0,.55);padding:8px 16px;border-radius:999px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.collage{height:400px}.visit{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.grid figure:first-child{grid-column:span 2;min-height:260px}}
+@media(max-width:760px){.demo-bar{position:static}.nav{top:0}.links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--paper);flex-direction:column;padding:14px 26px 20px;gap:16px;border-bottom:2px solid var(--ink)}.links.open{display:flex}.burger{display:block}.wa{bottom:84px}section{padding:56px 20px}.dots{display:none}}
 </style>
 </head>
 <body>
-<nav class="dots" aria-label="Sections" style="position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:58;display:flex;flex-direction:column;gap:10px"><a href="#rayons" data-sec="rayons" aria-label="Rayons" style="width:9px;height:9px;border-radius:50%;background:rgba(28,23,16,.3)"></a><a href="#maison" data-sec="maison" aria-label="Maison" style="width:9px;height:9px;border-radius:50%;background:rgba(28,23,16,.3)"></a><a href="#avis" data-sec="avis" aria-label="Avis" style="width:9px;height:9px;border-radius:50%;background:rgba(28,23,16,.3)"></a><a href="#visite" data-sec="visite" aria-label="Visite" style="width:9px;height:9px;border-radius:50%;background:rgba(28,23,16,.3)"></a></nav>
 <div class="progress" id="progress"></div>
-<div class="demo-bar">Démo pour Librairie Lumière Future · <span data-countdown>Visible 24h</span> · <a id="demoCta" href="#" style="color:var(--gold)"><b>Je la veux</b></a></div>
+<div id="loader"><div class="mark">LUMIÈRE FUTURE</div><div class="bar"><i></i></div><div style="font-size:12px;opacity:.6">la librairie s'ouvre…</div></div>
+<div class="demo-bar">Démo pour Librairie Lumière Future · <span data-countdown>Visible 24h</span> · <a id="demoCta" href="#" style="color:var(--goldsoft)"><b>Je la veux</b></a></div>
 
 <nav class="nav">
   <div class="brand">LUMIÈRE <span>FUTURE</span></div>
@@ -121,75 +170,77 @@ text-decoration:none;font-family:'Space Grotesk',Verdana,sans-serif;font-weight:
   <button class="burger" id="burger" aria-label="Menu">☰</button>
   <a class="btn" href="#visite">Commander</a>
 </nav>
+<nav class="dots" aria-label="Sections">
+  <a href="#rayons" data-sec="rayons" aria-label="Rayons"></a>
+  <a href="#maison" data-sec="maison" aria-label="Maison"></a>
+  <a href="#avis" data-sec="avis" aria-label="Avis"></a>
+  <a href="#visite" data-sec="visite" aria-label="Visite"></a>
+</nav>
 
 <header class="hero">
-
   <div>
     <span class="kicker">LIBRAIRIE · PAPETERIE · FÈS · ★ 4,9</span>
     <h1>Des livres,<br>du papier,<br><em>de la lumière.</em></h1>
-    <p class="lead">Librairie Lumière Future : manuels, romans, photocopies et fournitures au cœur de Fès. Commandez sur WhatsApp, récupérez en 10 minutes.</p>
+    <p class="lead">Manuels scolaires, romans, photocopies en 10 minutes, fournitures : la librairie de quartier qui vous connaît par votre prénom.</p>
     <div class="cta-row" style="display:flex;gap:12px;flex-wrap:wrap">
       <a class="btn" href="#rayons">Voir les rayons</a>
-      <a class="btn gold" href="#visite" style="background:linear-gradient(180deg,#d9a83f,#9a6b1e);color:#fff">Commander</a>
+      <a class="btn gold" href="#visite">Commander</a>
     </div>
-    <div class="trust" style="display:flex;gap:28px;margin-top:38px;flex-wrap:wrap;font-family:'Space Grotesk',Verdana,sans-serif;font-size:12.5px;color:#6a5f4c">
+    <div class="trust" style="display:flex;gap:28px;margin-top:38px;flex-wrap:wrap;font-family:'Space Grotesk',Verdana,sans-serif;font-size:12.5px;color:var(--mut)">
       <div><b style="display:block;font-size:26px;color:var(--ink)">4,9★</b>57 avis Google</div>
       <div><b style="display:block;font-size:26px;color:var(--ink)">23:30</b>ouvert tard</div>
       <div><b style="display:block;font-size:26px;color:var(--ink)">10 min</b>photocopies prêtes</div>
     </div>
   </div>
   <div class="collage">
-    <img class="i1" loading="eager" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkMQxuo_xdpLgmK_78OgDLUTCyChy_hi0Ho8l5UG8vY_DMH2nKShVsYlRghlFbXJHROX2nDCmAeQkdOw3TU0aabObJdsh5YKLgGoXkugtEt_USCV916-LAVuf2Wf8TDPGH7Ic002ZSLOEgM=w1152-h864-k-no" alt="Rayons de livres">
-    <img class="i2" loading="lazy" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkTi7VcaRwLBW8YY55a-8qbe1lrI4ShnFrkNruQLbFYQUrqfQBgyW6CGsWf0NoumlH0907h24vWAyvdflqFahEViuyKzq6Sz7oXwmSyu0lHoMXou1of8Pi_OKib0kJB8HMQN74r=w3000-h4000-k-no" alt="Papeterie">
+    <img class="i1" loading="eager" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmheTfzWXzEuwKAvYgCF0lrvAr1sqZT1J_CpPXezX3NF0AjDiJgokTHCLrksNPQawPYcLUaknDN6egihg6BCgW5NzQAIIjNhT0pWwi1_EjsPVdr8wVWmhta7laCknafzk9ES3QRIA=w714-h640-k-no" alt="Rayons de la librairie">
+    <img class="i2" loading="lazy" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkMQxuo_xdpLgmK_78OgDLUTCyChy_hi0Ho8l5UG8vY_DMH2nKShVsYlRghlFbXJHROX2nDCmAeQkdOw3TU0aabObJdsh5YKLgGoXkugtEt_USCV916-LAVuf2Wf8TDPGH7Ic002ZSLOEgM=w1152-h864-k-no" alt="Manuels scolaires">
     <div class="stamp">FAIT<br>À<br>FÈS</div>
   </div>
 </header>
-<style>.videoband{position:relative;height:52vh;min-height:300px;overflow:hidden}.videoband video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.videoband span{position:absolute;left:26px;bottom:20px;z-index:2;color:#fff;font-family:Verdana,sans-serif;font-size:12px;letter-spacing:3px;background:rgba(0,0,0,.55);padding:8px 16px;border-radius:999px}.chiffres{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:rgba(28,23,16,.15);border:2px solid var(--ink);border-radius:18px;overflow:hidden;margin-top:34px}.chiffres div{background:#fffdf6;padding:22px;text-align:center}.chiffres b{display:block;font-size:30px}.chiffres span{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6a5f4c}</style>
-<div class="videoband"><video autoplay muted loop playsinline preload="auto" poster="https://images.pexels.com/videos/3009534/free-video-3009534.jpg?auto=compress&cs=tinysrgb&fit=crop&h=630&w=1200"><source src="https://videos.pexels.com/video-files/3009534/3009534-sd_960_540_24fps.mp4" type="video/mp4"></video><span>9 secondes au coeur des rayons</span></div>
 
-<div class="marquee" aria-hidden="true" style="overflow:hidden;border-top:2px solid #1c1710;border-bottom:2px solid #1c1710;background:#1c1710;color:#e8c85c"><div class="marquee-track" style="display:inline-flex;white-space:nowrap;padding:11px 0;animation:mslide 24s linear infinite;font-size:11px;letter-spacing:4px;font-weight:700;font-family:Verdana,sans-serif"><span>LIVRES - PAPETERIE - PHOTOCOPIES - FES -&nbsp;</span><span>LIVRES - PAPETERIE - PHOTOCOPIES - FES -&nbsp;</span></div></div><style>@keyframes mslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
+<div class="marquee" aria-hidden="true"><div class="marquee-track" style="display:inline-flex;white-space:nowrap;padding:12px 0;animation:mslide 26s linear infinite;font-size:12px;letter-spacing:4px;font-weight:700;font-family:'Space Grotesk',Verdana,sans-serif;color:var(--gold)"><span>LIVRES · PAPETERIE · PHOTOCOPIES · FÈS ·&nbsp;</span><span>LIVRES · PAPETERIE · PHOTOCOPIES · FÈS ·&nbsp;</span></div></div>
+<style>@keyframes mslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
 
 <section id="rayons">
   <div class="k">01 · Les rayons</div>
   <h2>De tout, <em>bien rangé</em></h2>
-  <p class="sub">Touchez pour commander directement sur WhatsApp. Prix indicatifs : on les fixe ensemble.</p>
+  <p class="sub">Touchez pour commander directement sur WhatsApp. Prix sur devis : on les fixe ensemble.</p>
   <div class="tabs">
     <button class="tab on" data-tab="l">Librairie</button>
     <button class="tab" data-tab="p">Photocopie</button>
     <button class="tab" data-tab="s">Scolaire</button>
   </div>
   <div class="shelf" id="srv"></div>
-  <p class="fine" style="color:var(--muted);font-size:11.5px;margin-top:10px;font-family:Verdana">Photos d'ambiance · Vos vraies photos viendront ici</p>
+  <p class="fine" style="color:var(--mut);font-size:11.5px;margin-top:12px;font-family:Verdana">Photos réelles de la librairie · D'autres arrivent</p>
 </section>
 
-<div class="quote reveal">
-  <p>« Ici on ne vend pas des livres, on éclaire des avenirs. »</p>
-  <b>— MOHAMMED, LIBRAIRE</b>
-</div>
+<div class="videoband"><video autoplay muted loop playsinline preload="metadata" poster="https://images.pexels.com/videos/3009534/free-video-3009534.jpg?auto=compress&cs=tinysrgb&fit=crop&h=630&w=1200"><source src="https://videos.pexels.com/video-files/3009534/3009534-sd_960_540_24fps.mp4" type="video/mp4"></video><span>9 secondes au cœur des rayons</span></div>
 
 <section id="maison">
   <div class="k">02 · La maison</div>
   <h2>Une librairie <em>de quartier</em></h2>
   <p class="sub" style="max-width:640px">16 Lotis Mohammed, Fès. Le patron répond lui-même aux avis Google. C'est tout dire.</p>
   <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
-    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmheTfzWXzEuwKAvYgCF0lrvAr1sqZT1J_CpPXezX3NF0AjDiJgokTHCLrksNPQawPYcLUaknDN6egihg6BCgW5NzQAIIjNhT0pWwi1_EjsPVdr8wVWmhta7laCknafzk9ES3QRIA=w714-h640-k-no" alt="Intérieur">
-    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkTi7VcaRwLBW8YY55a-8qbe1lrI4ShnFrkNruQLbFYQUrqfQBgyW6CGsWf0NoumlH0907h24vWAyvdflqFahEViuyKzq6Sz7oXwmSyu0lHoMXou1of8Pi_OKib0kJB8HMQN74r=w3000-h4000-k-no" alt="Livres">
-    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmm5zTu7D2VK3sRDoAV6UEHIg0tjxg569NJVW4BfV6osIt5UstVaCNlPEoDfZ6Dt8tuk2xZNBgkv7Maw60R6W-8Yo3wiC_3_3DU3vyVMBQQy0KMxu7c4sMM7BIxeQ2IkKx4vYyZTydIi58=w478-h850-k-no" alt="Manuels">
-    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnG9NmwVGcOw8GawsY7MGXbXqXFMynBNEvHLnc1lfd8niaveCNfwyyz2IJqSIWmdYQbFlffmSaiNLIPzdXIslTy-dwnRXmsS4A7F0TU3_OrPgTWv3umef9c8KoZ5j7W2LdrJvJYe-zHJbkJ=w365-h364-k-no" alt="Rayonnage">>
-    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmm5zTu7D2VK3sRDoAV6UEHIg0tjxg569NJVW4BfV6osIt5UstVaCNlPEoDfZ6Dt8tuk2xZNBgkv7Maw60R6W-8Yo3wiC_3_3DU3vyVMBQQy0KMxu7c4sMM7BIxeQ2IkKx4vYyZTydIi58=w478-h850-k-no" alt="Comptoir">>
+    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnzW_7aAWie_vxzpZibi2eqrB-kOLrXktIuFGcDthOugXCljBO1ZZ9Jz1lAmRtqFWl8vsL6zskNKMVRNNGYMcNa63dP_RNUK8nBxzUXO5sSoMh0wvQPa4zG1JF87E34mgUFLlxNww=w3000-h4000-k-no" alt="Devanture">
+    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn-Ob-dR_fxp7KORkEvaJAu9FFZIDlsgI3iqb8BmyrJTFiDOEqInX3qiEiUUYVhjEUf-2nEBA-adrZtQJN-sYSIxuRER8KpLtziTjbz9Jm8R6CFv6pNm-WOtEkmJ2BXz_fiG52BtcTPp1I=w4032-h3024-k-no" alt="Intérieur">
+    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkTi7VcaRwLBW8YY55a-8qbe1lrI4ShnFrkNruQLbFYQUrqfQBgyW6CGsWf0NoumlH0907h24vWAyvdflqFahEViuyKzq6Sz7oXwmSyu0lHoMXou1of8Pi_OKib0kJB8HMQN74r=w3000-h4000-k-no" alt="Rayonnages">
+    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnG9NmwVGcOw8GawsY7MGXbXqXFMynBNEvHLnc1lfd8niaveCNfwyyz2IJqSIWmdYQbFlffmSaiNLIPzdXIslTy-dwnRXmsS4A7F0TU3_OrPgTWv3umef9c8KoZ5j7W2LdrJvJYe-zHJbkJ=w365-h364-k-no" alt="Comptoir">
+    <img loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:14px" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmm5zTu7D2VK3sRDoAV6UEHIg0tjxg569NJVW4BfV6osIt5UstVaCNlPEoDfZ6Dt8tuk2xZNBgkv7Maw60R6W-8Yo3wiC_3_3DU3vyVMBQQy0KMxu7c4sMM7BIxeQ2IkKx4vYyZTydIi58=w478-h850-k-no" alt="Détail">
   </div>
 </section>
 
 <section id="avis">
   <div class="k">03 · Fès parle</div>
   <h2>4,9 sur Google, <em>57 avis</em></h2>
-  <p class="sub">Vos vrais avis s'afficheront ici, mis à jour seuls.</p>
-<div class="srv" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:22px 0 28px">
-<div class="card" style="background:#fffdf6;border:2px solid var(--ink);border-radius:16px;padding:20px"><div style="color:#9a6b1e;letter-spacing:3px">★★★★★</div><p style="font-style:italic;margin:8px 0">Très bonne qualité d'impression, excellent service !</p><b style="font-size:12px;color:#6a5f4c">— Sara V., avis Google</b></div>
-<div class="card" style="background:#fffdf6;border:2px solid var(--ink);border-radius:16px;padding:20px"><div style="color:#9a6b1e;letter-spacing:3px">★★★★★</div><p style="font-style:italic;margin:8px 0">Très très bonne librairie, accueil chaleureux et serviable.</p><b style="font-size:12px;color:#6a5f4c">— Nour-eddine G., avis Google</b></div>
-<div class="card" style="background:#fffdf6;border:2px solid var(--ink);border-radius:16px;padding:20px"><div style="color:#9a6b1e;letter-spacing:3px">★★★★★</div><p style="font-style:italic;margin:8px 0">Merci beaucoup pour vos efforts.</p><b style="font-size:12px;color:#6a5f4c">— Mohamed Z., avis Google</b></div></div>
-<div style="margin-top:22px;border:2px dashed #9a6b1e;border-radius:16px;padding:18px 22px;color:#4a3a12;font-size:14.5px;line-height:1.7">Garantie Noira : si ce site ne vous apporte pas une seule commande en 30 jours, on le supprime et on vous rembourse la mise en route.</div>
-  <dl data-faq style="max-width:680px">
+  <p class="sub">De vrais avis, de vrais clients.</p>
+  <div class="avis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+    <div class="avi"><div class="stars">★★★★★</div><p>"Très bonne qualité d'impression, excellent service !"</p><b>— Sara V., avis Google</b></div>
+    <div class="avi"><div class="stars">★★★★★</div><p>"Très très bonne librairie, accueil chaleureux et serviable."</p><b>— Nour-eddine G., avis Google</b></div>
+    <div class="avi"><div class="stars">★★★★★</div><p>"Merci beaucoup pour vos efforts."</p><b>— Mohamed Z., avis Google</b></div>
+  </div>
+  <div style="margin-top:22px;border:2px dashed #9a6b1e;border-radius:16px;padding:18px 22px;color:#4a3a12;font-size:14.5px;line-height:1.7">Garantie Noira : si ce site ne vous apporte pas une seule commande en 30 jours, on le supprime et on vous rembourse la mise en route.</div>
+  <dl data-faq style="max-width:680px;margin-top:26px">
     <div style="border:2px solid var(--ink);border-radius:14px;padding:18px 20px;margin-bottom:12px;background:#fffdf6">
       <dt style="font-weight:600">Faites-vous les listes scolaires complètes ?</dt>
       <dd style="color:#6a5f4c;margin-top:6px">Oui, déposez la liste sur WhatsApp et on prépare tout le cartable.</dd>
@@ -204,8 +255,6 @@ text-decoration:none;font-family:'Space Grotesk',Verdana,sans-serif;font-weight:
     </div>
   </dl>
 </section>
-
-<div class="chiffres"><div><b>4,9</b><span>note Google</span></div><div><b>57</b><span>avis</span></div><div><b>23h30</b><span>ouvert tard</span></div><div><b>10 min</b><span>photocopies</span></div></div>
 
 <section id="visite">
   <div class="k">04 · Sans appeler, sans attendre</div>
@@ -226,7 +275,7 @@ text-decoration:none;font-family:'Space Grotesk',Verdana,sans-serif;font-weight:
         <li style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.12)"><a href="tel:+212638016679" style="font-weight:bold">Appeler : 06 38 01 66 79</a></li>
         <li style="padding:10px 0">Ouvert jusqu'à <b>23h30</b></li>
       </ul>
-      <iframe style="width:100%;height:240px;border:none;border-radius:14px;margin-top:16px" loading="lazy" title="Carte" src="https://www.google.com/maps?q=Librairie+Lumi%C3%A8re+Future+Fes&output=embed"></iframe>
+      <iframe class="mapframe" loading="lazy" title="Carte" src="https://www.google.com/maps?q=Librairie+Lumi%C3%A8re+Future+Fes&output=embed"></iframe>
     </div>
   </div>
 </section>
@@ -238,12 +287,14 @@ text-decoration:none;font-family:'Space Grotesk',Verdana,sans-serif;font-weight:
 <script src="/demo-assets/engine.js" data-slug="librairie-lumiere"></script>
 <script>
 const SRV={
-l:[["Manuels scolaires","Tous niveaux, neufs et occasion"],["Romans & poche","Le meilleur de la rentrée"],["Papeterie fine","Carnets, stylos, cadeaux"]],
+l:[["Manuels scolaires","Tous niveaux"],["Romans & poche","Le meilleur"],["Papeterie fine","Carnets, stylos"]],
 p:[["Photocopies N&B","Prêtes en 10 minutes"],["Impression couleur","Documents, dossiers"],["Reliure","Mémoires, rapports"]],
-s:[["Listes scolaires","On prépare tout le cartable"],["Fournitures","De la maternelle au bac"],["Jeux éducatifs","Apprendre en jouant"]]};
+s:[["Listes scolaires","On prépare le cartable"],["Fournitures","Maternelle au bac"],["Jeux éducatifs","Apprendre en jouant"]]};
 const box=document.getElementById('srv');
-window.__paintTab=function(t){box.innerHTML=(SRV[t]||SRV.l).map(d=>
-`<div class="book"><div style="font-size:11px;letter-spacing:3px;color:var(--gold);font-family:'Space Grotesk',Verdana">RAYON</div><h4>${d[0]}</h4><p>${d[1]}</p><div class="row" style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><span class="price">sur devis</span><a class="pedir" data-wa-biz data-wa-text="Bonjour Librairie Lumière Future, je veux : ${d[0]}. Je suis " href="#">commander →</a></div></div>`).join('');
+if(!box){var d=document.createElement('div');d.id='srv';d.className='shelf';document.querySelector('#rayons .tabs').after(d);}
+const box2=document.getElementById('srv');
+window.__paintTab=function(t){box2.innerHTML=(SRV[t]||SRV.l).map(d=>
+`<div class="book"><div class="n">RAYON</div><h4>${d[0]}</h4><p>${d[1]}</p><div class="row" style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><span class="price">sur devis</span><a class="pedir" data-wa-biz data-wa-text="Bonjour Librairie Lumière Future, je veux : ${d[0]}. Je suis " href="#">commander →</a></div></div>`).join('');
 wireBiz();};
 function wireBiz(){
   fetch('/api/demos/librairie-lumiere').then(r=>r.json()).then(cfg=>{
@@ -258,7 +309,9 @@ __paintTab('l');
 document.getElementById('burger').addEventListener('click',function(){
   document.getElementById('navLinks').classList.toggle('open');
 });
+document.querySelectorAll('#navLinks a').forEach(function(a){
+  a.addEventListener('click',function(){document.getElementById('navLinks').classList.remove('open')});
+});
 </script>
-<style>.dots a.on{background:#9a6b1e !important;box-shadow:0 0 10px #9a6b1e;transform:scale(1.35)}@media(max-width:760px){.dots{display:none}}</style><script>(function(){var secs=["rayons","maison","avis","visite"].map(function(id){return document.getElementById(id)});var dots=Array.prototype.slice.call(document.querySelectorAll(".dots a"));function onS(){var cur="rayons";secs.forEach(function(s){if(s&&s.getBoundingClientRect().top<innerHeight*.4)cur=s.id});dots.forEach(function(d){d.classList.toggle("on",d.dataset.sec===cur)})}addEventListener("scroll",onS,{passive:true});onS()})();</script>
 </body>
 </html>
