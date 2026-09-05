@@ -49,7 +49,7 @@ export function ensurePitch(slug: string, business: string, phone: string, hours
 
 export function createDemo(slug: string, business: string, hours = 24, phone = ''): DemoRecord {
   const all = load();
-  const rec: DemoRecord = { slug, business, createdAt: Date.now(), expiresAt: Date.now() + hours * 3600_000, phone };
+  const rec: DemoRecord = { slug, business, createdAt: Date.now(), expiresAt: hours > 0 ? Date.now() + hours * 3600_000 : null, phone };
   all[slug] = rec;
   save(all);
   return rec;

@@ -486,7 +486,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     try { b = JSON.parse(raw || '{}'); } catch { return json(400, { error: 'invalid JSON' }); }
     const slug = String(b.slug || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40);
     const business = String(b.business || '').slice(0, 80);
-    const hours = Math.min(72, Math.max(1, Number(b.hours || 24)));
+    const hours = Math.min(720, Math.max(0, Number(b.hours ?? 24)));
     if (!slug || !business) return json(400, { error: 'slug + business required' });
     const rec = createDemo(slug, business, hours, String(b.phone || '').slice(0, 30));
     core.emit('episodic', 'Demo registered', `${business} → /demo/${slug} (dies in ${hours}h)`, { demo: rec }, 0.7);
