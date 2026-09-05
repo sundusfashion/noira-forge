@@ -51,6 +51,14 @@ const SECTIONS: Record<string, { s1: [string, string]; s2: [string, string]; s3:
   },
 };
 
+const MARQUEE: Record<string, string[]> = {
+  restaurante: ['BRASA', 'PRODUCTO DE AQUÍ', 'SIN PRISAS', 'DE BARRIO'],
+  cafeteria: ['RECIÉN HECHO', 'PARA LLEVAR', 'DE BARRIO', 'SIN COLA'],
+  tienda: ['HECHO AQUÍ', 'COMERCIO LOCAL', 'ENVOLTORIO GRATIS', 'DE BARRIO'],
+  clinica: ['TE ESCUCHAMOS', 'SIN PRISAS', 'PRIMERA VISITA', 'CONFIANZA'],
+  negocio: ['DE BARRIO', 'SIN COMPROMISO', 'TRATO HUMANO', 'RESPUESTA HOY'],
+};
+
 function esc(s: string) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
 export function buildDemoSite(spec: DemoSpec): string {
@@ -83,6 +91,8 @@ cx.fillStyle='ACC'.replace('ACC','${t.acc}');cx.globalAlpha=p.o;cx.beginPath();c
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(spec.business)} — Hecho por Noira</title>
 <meta name="description" content="${esc(spec.business)}: web demo creada por Noira. Visible 24h.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:${t.bg};--coal:${t.coal};--acc:${t.acc};--gold:${t.gold};--cream:#f7ecdc;--muted:#bfae97;--line:rgba(255,255,255,.1);--font-d:'Syne',Verdana,sans-serif;--font-b:Georgia,serif}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -142,6 +152,12 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
 .wa{position:fixed;right:20px;bottom:20px;z-index:55;width:58px;height:58px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:28px;text-decoration:none}
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
 .reveal.in{opacity:1;transform:none}
+.marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(0,0,0,.5)}
+.marquee-track{display:inline-flex;white-space:nowrap;padding:11px 0;animation:mslide 24s linear infinite;font-size:11px;letter-spacing:4px;color:var(--gold);font-weight:700;font-family:Verdana,sans-serif}
+@keyframes mslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.orderbar{position:fixed;left:0;right:0;bottom:0;z-index:55;display:flex;gap:10px;align-items:center;justify-content:center;padding:10px 14px;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);border-top:1px solid var(--acc)}
+.orderbar a{flex:1;max-width:420px;text-align:center;background:linear-gradient(180deg,var(--acc),var(--coal));border:1px solid var(--acc);color:#fff;text-decoration:none;font-family:Verdana,sans-serif;font-weight:bold;font-size:13px;padding:12px;border-radius:10px}
+.mapframe{width:100%;height:280px;border:1px solid var(--line);border-radius:14px;margin-top:16px}
 @media(max-width:760px){.links{display:none}.book{grid-template-columns:1fr}.nav{top:62px}}
 </style>
 </head>
@@ -162,6 +178,7 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
     <div class="cta-row"><a class="btn" href="#s1">Ver más</a><a class="btn ghost" href="#s3">${esc(t.cta)}</a></div>
   </div>
 </header>
+  <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>${(MARQUEE[spec.sector] || MARQUEE.negocio).map(w => esc(w) + ' ✦ ').join('').repeat(2)}</span><span>${(MARQUEE[spec.sector] || MARQUEE.negocio).map(w => esc(w) + ' ✦ ').join('').repeat(2)}</span></div></div>
 <section id="s1">
   <div class="k">${esc(t.kicker)}</div>
   <h2>${esc(s.s1[0])}</h2>
@@ -180,7 +197,7 @@ ${gallery}
   <div class="k">SIN LLAMAR, SIN ESPERAR</div>
   <h2>Contacto</h2>
   <p class="sub">Escríbenos y te contestamos. Sin compromiso.</p>
-    <div class="book">
+    <div class="book" style="margin-bottom:18px">
     <form data-lead data-wa-open data-wa-template="Hola {business}, soy {nombre} ({telefono}). Quiero: {personas} el {dia}.">
       <div><label>Nombre</label><input name="nombre" required placeholder="Tu nombre"></div>
       <div><label>Teléfono / WhatsApp</label><input name="telefono" required placeholder="600 123 456"></div>
@@ -194,10 +211,12 @@ ${gallery}
     <div class="hours">
       <h3>${esc(spec.business)}</h3>
       <ul><li>${contact ? esc(contact) : 'Pídenos los datos por WhatsApp'}</li></ul>
+      ${spec.address ? `<iframe class="mapframe" loading="lazy" title="Mapa" src="https://www.google.com/maps?q=${encodeURIComponent(spec.address)}&output=embed"></iframe>` : ''}
     </div>
   </div>
 </section>
 <footer>${esc(spec.business)}${contact ? ' · ' + esc(contact) : ''} · Demo de Noira · Visible 24h, luego se apaga sola</footer>
+${bizWa ? `<div class="orderbar"><a data-wa-biz data-wa-text="Hola ${esc(spec.business)}, os escribo desde vuestra web." href="#">Pedir por WhatsApp</a></div>` : ''}
 <a class="wa" id="waFloat" data-wa-biz data-wa-text="Hola ${esc(spec.business)}, he visto vuestra web y quiero información." href="#" aria-label="WhatsApp">✆</a>
 <script src="/demo-assets/engine.js" data-slug="${spec.slug}"></script>
 <script>${fxScript}</script>

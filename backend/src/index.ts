@@ -124,7 +124,7 @@ import { searchPhotos, searchVideos } from './media/Pexels.js';
 import { findLeadsCached, loadCache, saveCache } from './leads/Leads.js';
 import { sendEmail, checkInbox } from './outreach/Mailer.js';
 import { generateDemo } from './agency/Generator.js';
-import { commitDemoToGitHub, triggerRenderDeploy } from './agency/Deployer.js';
+import { commitDemoToGitHub } from './agency/Deployer.js';
 
 // Full agency loop, alone: pick lead → build demo → persist → outreach. Caps keep it polite.
 async function agencyIteration(): Promise<string> {
@@ -135,11 +135,10 @@ async function agencyIteration(): Promise<string> {
       business: target.business, sector: target.sector,
       phone: target.phone, address: target.address, hours: 24,
     });
-    // durability (best effort, never blocks the sale)
+    // durability (best effort, never blocks the sale; NO auto-redeploy: runtime file serves instantly, git keeps it)
     try {
       const html = fs.readFileSync(`./dist-web/demo/${slug}/index.html`, 'utf8');
       await commitDemoToGitHub(slug, html);
-      await triggerRenderDeploy();
     } catch (e: any) { console.error('[agency] persist:', e.message); }
     const { subject, body } = await composeOutreach(target.business, target.sector, url);
     const id = marketing.queueOutreach({ to: target.email, business: target.business, subject, body });
@@ -616,18 +615,18 @@ server.listen(PORT, () => {
       catch (e) { console.error('[snapshot]', e); }
     } catch (e) { console.error('[prune]', e); }
   }, 3600_000);
-  // agency cycle: twice daily, the entity picks a lead, builds its demo and writes alone.
+  // agency cycle: up to 10 new contacts/day (one every ~2h), human pace, business hours salt.
   setInterval(async () => {
     if (AUTONOMY_MODE !== 'full') return;
-    for (let i = 0; i < 2; i++) {
-      try {
-        const r = await agencyIteration();
-        console.log('[agency]', r);
-        if (r === 'no targets queued') break;
-      } catch (e) { console.error('[agency]', (e as any)?.message || e); }
-      await new Promise(res => setTimeout(res, 30000));
-    }
-  }, 12 * 3600_000);
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const sentToday = marketing.listOutreach('sent', 500)
+        .filter(o => o.sent_at && new Date(o.sent_at).toISOString().slice(0, 10) === today).length;
+      if (sentToday >= 10) { console.log('[agency] daily cap reached'); return; }
+      const r = await agencyIteration();
+      console.log('[agency]', r);
+    } catch (e) { console.error('[agency]', (e as any)?.message || e); }
+  }, 2 * 3600_000);
   // outreach cycle: daily inbox read (replies) + one gentle follow-up per silent lead.
   setInterval(async () => {
     try {
