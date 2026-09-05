@@ -24,10 +24,14 @@ export async function generateDemo(input: {
   const query = SECTOR_QUERY[sector] || SECTOR_QUERY.negocio;
 
   let photos: string[] = [];
+  let sweetPhotos: string[] = [];
   let video: string | undefined;
   try {
     photos = (await searchPhotos(query, 4)).map(p => p.url);
   } catch (e) { console.error('[generator] photos:', (e as any).message); }
+  try {
+    sweetPhotos = (await searchPhotos('dessert cake coffee', 3)).map(p => p.url);
+  } catch (e) { console.error('[generator] sweets:', (e as any).message); }
   try {
     const vids = await searchVideos(query, 1);
     if (vids[0]) video = vids[0].url;
@@ -38,7 +42,7 @@ export async function generateDemo(input: {
 
   const spec: DemoSpec = {
     slug, business: input.business, sector,
-    phone: input.phone, address: input.address, photos, video,
+    phone: input.phone, address: input.address, photos, sweetPhotos, video,
   };
   const html = buildDemoSite(spec);
 

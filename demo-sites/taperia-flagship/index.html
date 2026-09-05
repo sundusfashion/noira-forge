@@ -329,10 +329,10 @@ m:[["Pulpo á feira","Con cachelos","13,50 €","https://images.pexels.com/photo
 ["Zamburiñas","Al horno con jamón","13,00 €","https://images.pexels.com/photos/18299594/pexels-photo-18299594.jpeg?auto=compress&cs=tinysrgb&h=400&w=600"],
 ["Caldeirada","Para 2, con patata","24,00 €","https://images.pexels.com/photos/37215460/pexels-photo-37215460.jpeg?auto=compress&cs=tinysrgb&h=400&w=600"],
 ["Empanada","De berberechos","4,50 €","https://images.pexels.com/photos/18299585/pexels-photo-18299585.jpeg?auto=compress&cs=tinysrgb&h=400&w=600"]],
-d:[["Tarta de queso","Cremosa, frutos rojos","6,50 €","https://images.pexels.com/photos/18299591/pexels-photo-18299591.jpeg?auto=compress&cs=tinysrgb&h=400&w=600"],
-["Torrija","Caramelizada, helado","6,00 €","https://images.pexels.com/photos/18299596/pexels-photo-18299596.jpeg?auto=compress&cs=tinysrgb&h=400&w=600"],
-["Arroz con leche","Quemado al momento","4,50 €","https://images.pexels.com/photos/18299593/pexels-photo-18299593.jpeg?auto=compress&cs=tinysrgb&h=400&w=600"],
-["Café de pota","Como debe ser","2,80 €","https://images.pexels.com/photos/18299594/pexels-photo-18299594.jpeg?auto=compress&cs=tinysrgb&h=400&w=600"]]};
+d:[["Tarta de queso","Cremosa, frutos rojos","6,50 €","https://images.pexels.com/photos/34468155/pexels-photo-34468155.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"],
+["Torrija","Caramelizada, helado","6,00 €","https://images.pexels.com/photos/36616787/pexels-photo-36616787.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"],
+["Arroz con leche","Quemado al momento","4,50 €","https://images.pexels.com/photos/29819833/pexels-photo-29819833.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"],
+["Café de pota","Como debe ser","2,80 €","https://images.pexels.com/photos/302468/pexels-photo-302468.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"]]};
 const box=document.getElementById('platos');
 window.__paintTab=function(t){box.innerHTML=(MENU[t]||MENU.b).map((d,i)=>
 `<div class="plato" style="animation-delay:${i*70}ms"><img loading="lazy" src="${d[3]}" alt="${d[0]}"><div class="pd"><h4>${d[0]}</h4><p>${d[1]}</p><div class="row"><span class="price">${d[2]}</span><a class="pedir" data-wa-biz data-wa-text="Hola Tapería Plaza, quiero pedir: ${d[0]}. Soy " href="#">pedir →</a></div></div></div>`).join('');

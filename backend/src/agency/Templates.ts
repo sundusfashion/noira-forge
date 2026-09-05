@@ -7,7 +7,16 @@ export interface DemoSpec {
   phone?: string;
   address?: string;
   photos: string[];
+  sweetPhotos?: string[];
   video?: string;
+}
+
+const SWEET_RE = /tarta|torrija|arroz con leche|helado|chocolate|postre|filloa|flan|tiramisu|café|cafe|capuch|tarta|pastel|dulce|churro|bolleria|croissant/i;
+
+function dishPhoto(name: string, i: number, photos: string[], sweet: string[]): string {
+  if (SWEET_RE.test(name) && sweet.length) return sweet[i % sweet.length];
+  if (!photos.length) return '';
+  return photos[i % photos.length];
 }
 
 const THEMES: Record<string, { bg: string; coal: string; acc: string; gold: string; kicker: string; cta: string }> = {
@@ -71,7 +80,7 @@ export function buildDemoSite(spec: DemoSpec): string {
     : '';
   const photos = spec.photos.slice(0, 4);
   const gallery = photos.map((u, i) => `    <figure><img loading="lazy" src="${u}" alt="Foto ${i + 1} de ${esc(spec.business)}"></figure>`).join('\n');
-  const items = s.items.map((d, i) => `      <div class="dish" style="animation-delay:${i * 70}ms"><img loading="lazy" src="${photos[i % Math.max(1, photos.length)]}" alt=""><div><h4>${d[0]}</h4><p>${d[1]}</p>${dishOrder(d[0])}</div><div class="price">${d[2]}</div></div>`).join('\n');
+  const items = s.items.map((d, i) => `      <div class="dish" style="animation-delay:${i * 70}ms"><img loading="lazy" src="${dishPhoto(d[0], i, photos, spec.sweetPhotos || [])}" alt=""><div><h4>${d[0]}</h4><p>${d[1]}</p>${dishOrder(d[0])}</div><div class="price">${d[2]}</div></div>`).join('\n');
   const videoBg = spec.video
     ? `<video autoplay muted loop playsinline poster="${photos[0] || ''}"><source src="${spec.video}" type="video/mp4"></video>`
     : `<canvas id="fx"></canvas>`;
