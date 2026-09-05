@@ -30,6 +30,11 @@ export class MarketingStore {
         followups INTEGER DEFAULT 0, created_at INTEGER NOT NULL
       );
       CREATE INDEX IF NOT EXISTS idx_out_status ON outreach(status);
+      CREATE TABLE IF NOT EXISTS targets (
+        email TEXT PRIMARY KEY, business TEXT NOT NULL, sector TEXT DEFAULT 'negocio',
+        phone TEXT DEFAULT '', address TEXT DEFAULT '', demo_slug TEXT DEFAULT '',
+        status TEXT DEFAULT 'new', created_at INTEGER NOT NULL
+      );
       CREATE TABLE IF NOT EXISTS demo_leads (
         id TEXT PRIMARY KEY, demo_slug TEXT NOT NULL, nombre TEXT NOT NULL,
         telefono TEXT NOT NULL, dia TEXT DEFAULT '', personas TEXT DEFAULT '',
@@ -86,6 +91,25 @@ export class MarketingStore {
   }
   outreachStats(): Record<string, number> {
     const rows: any[] = this.db.prepare(`SELECT status, COUNT(*) as c FROM outreach GROUP BY status`).all();
+    const out: Record<string, number> = {};
+    for (const r of rows) out[r.status] = r.c;
+    return out;
+  }
+
+  upsertTarget(t: { email: string; business: string; sector?: string; phone?: string; address?: string }): void {
+    this.db.prepare(`INSERT INTO targets (email, business, sector, phone, address, status, created_at)
+      VALUES (?,?,?,?,?,'new',?) ON CONFLICT(email) DO UPDATE SET business=excluded.business, sector=excluded.sector, phone=excluded.phone, address=excluded.address`)
+      .run(t.email.toLowerCase(), t.business, t.sector || 'negocio', t.phone || '', t.address || '', Date.now());
+  }
+  nextTarget(): any | null {
+    return this.db.prepare(`SELECT * FROM targets WHERE status='new' ORDER BY created_at ASC LIMIT 1`).get() ?? null;
+  }
+  setTarget(email: string, status: string, demoSlug = '') {
+    if (demoSlug) this.db.prepare(`UPDATE targets SET status=?, demo_slug=? WHERE email=?`).run(status, demoSlug, email);
+    else this.db.prepare(`UPDATE targets SET status=? WHERE email=?`).run(status, email);
+  }
+  targetStats(): Record<string, number> {
+    const rows: any[] = this.db.prepare(`SELECT status, COUNT(*) as c FROM targets GROUP BY status`).all();
     const out: Record<string, number> = {};
     for (const r of rows) out[r.status] = r.c;
     return out;

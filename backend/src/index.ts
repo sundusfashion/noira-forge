@@ -123,6 +123,37 @@ import { getDemo, ensureShowcase, createDemo, isExpired, expiredPage } from './d
 import { searchPhotos, searchVideos } from './media/Pexels.js';
 import { findLeadsCached, loadCache, saveCache } from './leads/Leads.js';
 import { sendEmail, checkInbox } from './outreach/Mailer.js';
+import { generateDemo } from './agency/Generator.js';
+import { commitDemoToGitHub, triggerRenderDeploy } from './agency/Deployer.js';
+
+// Full agency loop, alone: pick lead → build demo → persist → outreach. Caps keep it polite.
+async function agencyIteration(): Promise<string> {
+  const target: any = marketing.nextTarget();
+  if (!target) return 'no targets queued';
+  try {
+    const { slug, url } = await generateDemo({
+      business: target.business, sector: target.sector,
+      phone: target.phone, address: target.address, hours: 24,
+    });
+    // durability (best effort, never blocks the sale)
+    try {
+      const html = fs.readFileSync(`./dist-web/demo/${slug}/index.html`, 'utf8');
+      await commitDemoToGitHub(slug, html);
+      await triggerRenderDeploy();
+    } catch (e: any) { console.error('[agency] persist:', e.message); }
+    const { subject, body } = await composeOutreach(target.business, target.sector, url);
+    const id = marketing.queueOutreach({ to: target.email, business: target.business, subject, body });
+    await sendEmail(target.email, subject, body);
+    marketing.markOutreach(id, 'sent');
+    marketing.setTarget(target.email, 'sent', slug);
+    core.emit('episodic', 'Autonomous sale cycle', `${target.business} <${target.email}>: demo ${url} built + sent alone.`, { slug }, 0.95);
+    broadcast(fullState());
+    return `sent ${target.business} (${slug})`;
+  } catch (e: any) {
+    marketing.setTarget(target.email, 'failed');
+    return `failed ${target.business}: ${e.message}`;
+  }
+}
 
 function outreachTemplate(business: string, demoUrl: string): { subject: string; body: string } {
   return {
@@ -232,7 +263,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   }
   if (url.pathname === '/api/outreach' && req.method === 'GET') {
     if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
-    return json(200, { stats: marketing.outreachStats(), recent: marketing.listOutreach(undefined, 30) });
+    return json(200, { stats: marketing.outreachStats(), targets: marketing.targetStats(), recent: marketing.listOutreach(undefined, 30) });
   }
   // Demo config: the demo page fetches this to wire OUR WhatsApp + prefilled text.
   if (url.pathname.startsWith('/api/demos/') && req.method === 'GET') {
@@ -483,6 +514,29 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     }
     return json(200, { ok: true, suppressed: n });
   }
+  if (url.pathname === '/api/outreach/targets' && req.method === 'POST') {
+    // Seed the autonomous queue (backup token). { targets: [{email, business, sector, phone, address}] }
+    const token = process.env.BACKUP_TOKEN;
+    if (token && req.headers['x-backup-token'] !== token) return json(401, { error: 'backup token required' });
+    try {
+      const b = JSON.parse(raw || '{}');
+      if (!Array.isArray(b.targets)) return json(400, { error: 'targets[] required' });
+      let n = 0;
+      for (const t of b.targets.slice(0, 200)) {
+        if (!t.email || !t.business) continue;
+        marketing.upsertTarget({ email: String(t.email), business: String(t.business).slice(0, 80), sector: String(t.sector || 'negocio').slice(0, 30), phone: String(t.phone || '').slice(0, 30), address: String(t.address || '').slice(0, 120) });
+        n++;
+      }
+      return json(200, { ok: true, queued: n, stats: marketing.targetStats() });
+    } catch { return json(400, { error: 'invalid JSON' }); }
+  }
+  if (url.pathname === '/api/agency/run' && req.method === 'POST') {
+    // Manual trigger of one autonomous cycle (backup token). The scheduler runs it daily alone.
+    const token = process.env.BACKUP_TOKEN;
+    if (token && req.headers['x-backup-token'] !== token) return json(401, { error: 'backup token required' });
+    try { return json(200, { result: await agencyIteration() }); }
+    catch (e: any) { return json(500, { error: e.message }); }
+  }
   if (url.pathname === '/api/restore' && req.method === 'POST') {
     // Re-upload a mind after a cloud restart wiped the ephemeral disk.
     const token = process.env.BACKUP_TOKEN;
@@ -549,6 +603,18 @@ server.listen(PORT, () => {
       catch (e) { console.error('[snapshot]', e); }
     } catch (e) { console.error('[prune]', e); }
   }, 3600_000);
+  // agency cycle: twice daily, the entity picks a lead, builds its demo and writes alone.
+  setInterval(async () => {
+    if (AUTONOMY_MODE !== 'full') return;
+    for (let i = 0; i < 2; i++) {
+      try {
+        const r = await agencyIteration();
+        console.log('[agency]', r);
+        if (r === 'no targets queued') break;
+      } catch (e) { console.error('[agency]', (e as any)?.message || e); }
+      await new Promise(res => setTimeout(res, 30000));
+    }
+  }, 12 * 3600_000);
   // outreach cycle: daily inbox read (replies) + one gentle follow-up per silent lead.
   setInterval(async () => {
     try {
