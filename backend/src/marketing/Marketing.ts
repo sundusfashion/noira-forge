@@ -30,7 +30,6 @@ export class MarketingStore {
         followups INTEGER DEFAULT 0, created_at INTEGER NOT NULL
       );
       CREATE INDEX IF NOT EXISTS idx_out_status ON outreach(status);
-      try { this.db.exec(`ALTER TABLE targets ADD COLUMN scheduled_for INTEGER DEFAULT 0`); } catch { /* exists */ }
       CREATE TABLE IF NOT EXISTS targets (
         email TEXT PRIMARY KEY, business TEXT NOT NULL, sector TEXT DEFAULT 'negocio',
         phone TEXT DEFAULT '', address TEXT DEFAULT '', demo_slug TEXT DEFAULT '',
@@ -43,6 +42,7 @@ export class MarketingStore {
         created_at INTEGER NOT NULL
       );
     `);
+    try { this.db.exec(`ALTER TABLE targets ADD COLUMN scheduled_for INTEGER DEFAULT 0`); } catch { /* column exists */ }
   }
   queue(title: string, body: string, topic = '', channel = 'blog'): Article {
     const a: Article = { id: `art_${nanoid(8)}`, title, body, topic, channel, status: 'queued', createdAt: Date.now() };
