@@ -1,8 +1,8 @@
-import Database from 'better-sqlite3';
+﻿import Database from 'better-sqlite3';
 import fs from 'node:fs';
 
 // SerpApi enrichment with AGGRESSIVE caching: every query paid once, stored forever.
-// Budget discipline: 100 free searches → discovery via OSM (free), SerpApi only for
+// Budget discipline: 100 free searches â†’ discovery via OSM (free), SerpApi only for
 // place details (photos + reviews + hours) of hot candidates.
 export interface EnrichedPlace {
   title: string;
@@ -19,7 +19,7 @@ export interface EnrichedPlace {
 
 function key(): string {
   const k = process.env.SERPAPI_KEY;
-  if (!k) throw new Error('serpapi not connected — add SERPAPI_KEY');
+  if (!k) throw new Error('serpapi not connected â€” add SERPAPI_KEY');
   return k;
 }
 
@@ -33,7 +33,7 @@ function store(): Database.Database {
   return db;
 }
 
-function cached<T>(qkey: string, maxAgeMs: number, fn: () => Promise<T>): Promise<{ data: T; cached: boolean }> {
+function cachedFetch<T>(qkey: string, maxAgeMs: number, fn: () => Promise<T>): Promise<{ data: T; cached: boolean }> {
   const s = store();
   const row: any = s.prepare(`SELECT payload, created_at FROM serpapi_cache WHERE qkey=?`).get(qkey);
   if (row && Date.now() - row.created_at < maxAgeMs) {
@@ -56,10 +56,10 @@ async function serp(endpoint: string, params: Record<string, string>): Promise<a
   return r.json();
 }
 
-// One search call → up to 20 businesses with rating/hours/phone/thumbnail inline.
+// One search call â†’ up to 20 businesses with rating/hours/phone/thumbnail inline.
 export async function searchPlaces(query: string, ll: string, hl = 'es'): Promise<{ places: any[]; cached: boolean }> {
   const qkey = `search|${query}|${ll}|${hl}`;
-  const { data, cached } = await cached<any[]>(qkey, 30 * 86400_000, async () => {
+  const { data, cached } = await cachedFetch<any[]>(qkey, 30 * 86400_000, async () => {
     const j = await serp('google_maps', { q: query, ll, type: 'search', hl });
     return (j.local_results || []).map((p: any) => ({
       title: p.title, data_id: p.data_id, rating: p.rating, reviews: p.reviews,
@@ -74,7 +74,7 @@ export async function searchPlaces(query: string, ll: string, hl = 'es'): Promis
 // Deep dive (2 calls): top reviews + top photos. Only for hot candidates.
 export async function enrichPlace(dataId: string, hl = 'es'): Promise<{ place: EnrichedPlace; cached: boolean }> {
   const qkey = `place|${dataId}|${hl}`;
-  const { data, cached } = await cached<EnrichedPlace>(qkey, 30 * 86400_000, async () => {
+  const { data, cached } = await cachedFetch<EnrichedPlace>(qkey, 30 * 86400_000, async () => {
     const [rev, pho] = await Promise.all([
       serp('google_maps_reviews', { data_id: dataId, hl }).catch(() => ({ reviews: [] })),
       serp('google_maps_photos', { data_id: dataId, hl }).catch(() => ({ photos: [] })),
@@ -97,3 +97,4 @@ export function cacheStats(): { keys: number } {
   const r: any = store().prepare(`SELECT COUNT(*) as c FROM serpapi_cache`).get();
   return { keys: r.c };
 }
+
