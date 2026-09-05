@@ -1,120 +1,25 @@
-// Adaptive demo template: one engine, sector soul.
-// Sectors: restaurante | cafeteria | tienda | clinica | negocio
-export interface DemoSpec {
-  slug: string;
-  business: string;
-  sector: string;
-  phone?: string;
-  address?: string;
-  photos: string[];
-  sweetPhotos?: string[];
-  video?: string;
-}
-
-const SWEET_RE = /tarta|torrija|arroz con leche|helado|chocolate|postre|filloa|flan|tiramisu|café|cafe|capuch|tarta|pastel|dulce|churro|bolleria|croissant/i;
-
-function dishPhoto(name: string, i: number, photos: string[], sweet: string[]): string {
-  if (SWEET_RE.test(name) && sweet.length) return sweet[i % sweet.length];
-  if (!photos.length) return '';
-  return photos[i % photos.length];
-}
-
-const THEMES: Record<string, { bg: string; coal: string; acc: string; gold: string; kicker: string; cta: string }> = {
-  restaurante: { bg: '#0c0705', coal: '#140d08', acc: '#ff7a1a', gold: '#e8b64c', kicker: 'DE LA TIERRA A LA MESA', cta: 'Reservar mesa' },
-  cafeteria: { bg: '#120b06', coal: '#1d1209', acc: '#c98a3d', gold: '#e8b64c', kicker: 'TU SITIO DE CADA DÍA', cta: 'Pedir para llevar' },
-  tienda: { bg: '#171008', coal: '#221610', acc: '#d9703b', gold: '#e8b64c', kicker: 'DE BARRIO, DE VERDAD', cta: 'Encargar' },
-  clinica: { bg: '#04141c', coal: '#08222e', acc: '#19b8d8', gold: '#e8c85c', kicker: 'CUIDAMOS DE TI', cta: 'Pedir cita' },
-  negocio: { bg: '#0a0a0d', coal: '#121217', acc: '#D4A843', gold: '#e8c85c', kicker: 'DE TU BARRIO', cta: 'Contactar' },
-};
-
-const SECTIONS: Record<string, { s1: [string, string]; s2: [string, string]; s3: [string, string]; items: [string, string, string][] }> = {
-  restaurante: {
-    s1: ['La carta', 'Producto de cercanía, precios de barrio.'],
-    s2: ['El local', 'Así se come aquí.'],
-    s3: ['Reserva', 'Elige día y hora. Te confirmamos por WhatsApp.'],
-    items: [['Plato de la casa', 'Receta tradicional', '14,50 €'], ['Especialidad', 'Pregunta en barra', '16,00 €'], ['Menú del día', 'De lunes a viernes', '15,00 €'], ['Postre casero', 'Hecho aquí', '5,50 €']],
-  },
-  cafeteria: {
-    s1: ['La carta', 'Lo de siempre, bien hecho.'],
-    s2: ['El local', 'Tu sitio en el barrio.'],
-    s3: ['Pide', 'Lo pides aquí y lo recoges listo.'],
-    items: [['Desayuno completo', 'Café + tostada + zumo', '4,50 €'], ['Café con leche', 'El de siempre', '1,60 €'], ['Pincho del día', 'Pregunta en barra', '2,80 €'], ['Para llevar', 'Sin cola', '+0,20 €']],
-  },
-  tienda: {
-    s1: ['La tienda', 'Selección del barrio.'],
-    s2: ['Así somos', 'Comercio local de verdad.'],
-    s3: ['Encarga', 'Cuéntanos qué buscas.'],
-    items: [['Lo más vendido', 'Selección de la casa', 'desde 12 €'], ['Encargo personalizado', 'Lo preparamos a tu gusto', 'a convenir'], ['Tarjeta regalo', 'Para que elijan ellos', '20–50 €'], ['Envoltorio', 'Siempre incluido', 'gratis']],
-  },
-  clinica: {
-    s1: ['Tratamientos', 'Primera visita informativa.'],
-    s2: ['La clínica', 'Trato humano, sin prisas.'],
-    s3: ['Pide cita', 'Elige día y hora.'],
-    items: [['Primera visita', 'Te escuchamos', 'gratis'], ['Tratamiento base', 'Plan a medida', 'a convenir'], ['Revisión', 'Seguimiento incluido', '—'], ['Urgencias', 'Te hacemos hueco', '—']],
-  },
-  negocio: {
-    s1: ['Servicios', 'Lo que hacemos por ti.'],
-    s2: ['Nosotros', 'Gente de barrio.'],
-    s3: ['Contacto', 'Escríbenos sin compromiso.'],
-    items: [['Servicio 1', 'Pregúntanos', 'a convenir'], ['Servicio 2', 'A medida', 'a convenir'], ['Servicio 3', 'Sin compromiso', '—'], ['Presupuesto', 'Gratis y sin letra pequeña', 'gratis']],
-  },
-};
-
-const MARQUEE: Record<string, string[]> = {
-  restaurante: ['BRASA', 'PRODUCTO DE AQUÍ', 'SIN PRISAS', 'DE BARRIO'],
-  cafeteria: ['RECIÉN HECHO', 'PARA LLEVAR', 'DE BARRIO', 'SIN COLA'],
-  tienda: ['HECHO AQUÍ', 'COMERCIO LOCAL', 'ENVOLTORIO GRATIS', 'DE BARRIO'],
-  clinica: ['TE ESCUCHAMOS', 'SIN PRISAS', 'PRIMERA VISITA', 'CONFIANZA'],
-  negocio: ['DE BARRIO', 'SIN COMPROMISO', 'TRATO HUMANO', 'RESPUESTA HOY'],
-};
-
-function esc(s: string) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-
-export function buildDemoSite(spec: DemoSpec): string {
-  const t = THEMES[spec.sector] || THEMES.negocio;
-  const s = SECTIONS[spec.sector] || SECTIONS.negocio;
-  const contact = [spec.address, spec.phone].filter(Boolean).join(' · ');
-  const bizWa = (spec.phone || '').replace(/\D/g, '');
-  const dishOrder = (d: string) => bizWa
-    ? ` <a data-wa-biz data-wa-text="Hola ${esc(spec.business)}, quiero pedir: ${d}. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a>`
-    : '';
-  const photos = spec.photos.slice(0, 4);
-  const gallery = photos.map((u, i) => `    <figure><img loading="lazy" src="${u}" alt="Foto ${i + 1} de ${esc(spec.business)}"></figure>`).join('\n');
-  const items = s.items.map((d, i) => `      <div class="dish" style="animation-delay:${i * 70}ms"><img loading="lazy" src="${dishPhoto(d[0], i, photos, spec.sweetPhotos || [])}" alt=""><div><h4>${d[0]}</h4><p>${d[1]}</p>${dishOrder(d[0])}</div><div class="price">${d[2]}</div></div>`).join('\n');
-  const videoBg = spec.video
-    ? `<video autoplay muted loop playsinline poster="${photos[0] || ''}"><source src="${spec.video}" type="video/mp4"></video>`
-    : `<canvas id="fx"></canvas>`;
-  const fxScript = spec.video ? '' : `
-/* brasas genéricas del sector */
-const cv=document.getElementById('fx'),cx=cv.getContext('2d');let W,H;
-function rs(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight}
-addEventListener('resize',rs);rs();
-const P=[];for(let i=0;i<70;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2.4+.6,s:Math.random()*.7+.2,o:Math.random()*.6+.2});
-(function loop(){cx.clearRect(0,0,W,H);for(const p of P){p.y-=p.s;if(p.y<-6){p.y=H+6;p.x=Math.random()*W}
-cx.fillStyle='ACC'.replace('ACC','${t.acc}');cx.globalAlpha=p.o;cx.beginPath();cx.arc(p.x,p.y,p.r*2.5,0,7);cx.fill()}cx.globalAlpha=1;requestAnimationFrame(loop)})();`;
-
-  return `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${esc(spec.business)} — Hecho por Noira</title>
-<meta name="description" content="${esc(spec.business)}${spec.address ? ' en ' + esc(spec.address) : ''}: web demo creada por Noira. Visible 24h.">
-<meta property="og:title" content="${esc(spec.business)}">
+<title>ColadaMax — Hecho por Noira</title>
+<meta name="description" content="ColadaMax en Av. Santa Icia 7, Naron: web demo creada por Noira. Visible 24h.">
+<meta property="og:title" content="ColadaMax">
 <meta property="og:type" content="website">
-${spec.photos[0] ? `<meta property="og:image" content="${spec.photos[0]}">` : ''}
+<meta property="og:image" content="https://images.pexels.com/photos/38886679/pexels-photo-38886679.jpeg?auto=compress&cs=tinysrgb&h=650&w=940">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"LocalBusiness","name":"${esc(spec.business)}"${spec.phone ? `,"telephone":"+${spec.phone.replace(/\D/g, '')}"` : ''}${spec.address ? `,"address":"${esc(spec.address)}"` : ''}}
+{"@context":"https://schema.org","@type":"LocalBusiness","name":"ColadaMax","telephone":"+34717712250","address":"Av. Santa Icia 7, Naron"}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:${t.bg};--coal:${t.coal};--acc:${t.acc};--gold:${t.gold};--cream:#f7ecdc;--muted:#bfae97;--line:rgba(255,255,255,.1);--font-d:'Syne',Verdana,sans-serif;--font-b:Georgia,serif}
+:root{--bg:#171008;--coal:#221610;--acc:#d9703b;--gold:#e8b64c;--cream:#f7ecdc;--muted:#bfae97;--line:rgba(255,255,255,.1);--font-d:'Syne',Verdana,sans-serif;--font-b:Georgia,serif}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-b);overflow-x:hidden}
 a{color:inherit}
-.demo-bar{position:sticky;top:0;z-index:60;background:linear-gradient(90deg,${t.coal},${t.acc},${t.coal});color:#fff;text-align:center;font-family:Verdana,sans-serif;font-size:12.5px;font-weight:bold;padding:10px 14px}
+.demo-bar{position:sticky;top:0;z-index:60;background:linear-gradient(90deg,#221610,#d9703b,#221610);color:#fff;text-align:center;font-family:Verdana,sans-serif;font-size:12.5px;font-weight:bold;padding:10px 14px}
 .demo-bar b{background:#000;color:#ffe9b0;padding:2px 10px;border-radius:20px;margin-left:8px}
 .nav{position:sticky;top:41px;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:14px 26px;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .brand{font-family:var(--font-d);font-weight:800;font-size:19px;letter-spacing:2px}
@@ -122,7 +27,7 @@ a{color:inherit}
 .links{display:flex;gap:22px;font-family:Verdana,sans-serif;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase}
 .links a{text-decoration:none;color:var(--muted)}
 .links a:hover{color:var(--gold)}
-.btn{display:inline-block;background:linear-gradient(180deg,${t.acc},${t.coal});color:#fff;text-decoration:none;font-family:Verdana,sans-serif;font-weight:bold;font-size:13px;letter-spacing:1px;padding:13px 28px;border-radius:12px;border:1px solid var(--acc);cursor:pointer;transition:transform .15s}
+.btn{display:inline-block;background:linear-gradient(180deg,#d9703b,#221610);color:#fff;text-decoration:none;font-family:Verdana,sans-serif;font-weight:bold;font-size:13px;letter-spacing:1px;padding:13px 28px;border-radius:12px;border:1px solid var(--acc);cursor:pointer;transition:transform .15s}
 .btn:hover{transform:translateY(-2px)}
 .btn.ghost{background:transparent}
 .hero{position:relative;min-height:88vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;background:#000}
@@ -188,37 +93,43 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
 <body>
 <div class="progress" id="progress"></div>
 <div class="grain" aria-hidden="true"></div>
-<div class="demo-bar">⚡ WEB DEMO para ${esc(spec.business)} · <span data-countdown>Visible 24h</span> · ¿Te gusta? <a id="demoCta" href="#" style="color:#000"><b>Escríbenos por WhatsApp</b></a></div>
+<div class="demo-bar">⚡ WEB DEMO para ColadaMax · <span data-countdown>Visible 24h</span> · ¿Te gusta? <a id="demoCta" href="#" style="color:#000"><b>Escríbenos por WhatsApp</b></a></div>
 <nav class="nav">
-  <div class="brand">${esc(spec.business.split(' ')[0].toUpperCase())}</div>
-  <div class="links"><a href="#inicio">Inicio</a><a href="#s1">${esc(s.s1[0])}</a><a href="#s2">Fotos</a><a href="#s3">Contacto</a></div>
-  <a class="btn" href="#s3">${esc(t.cta)}</a>
+  <div class="brand">COLADAMAX</div>
+  <div class="links"><a href="#inicio">Inicio</a><a href="#s1">La tienda</a><a href="#s2">Fotos</a><a href="#s3">Contacto</a></div>
+  <a class="btn" href="#s3">Encargar</a>
 </nav>
 <header class="hero" id="inicio">
-  ${videoBg}
+  <video autoplay muted loop playsinline poster="https://images.pexels.com/photos/38886679/pexels-photo-38886679.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"><source src="https://videos.pexels.com/video-files/35207575/14915472_1280_720_25fps.mp4" type="video/mp4"></video>
   <div class="hero-inner">
     <div class="open-pill open" data-open="8" data-close="21" data-open-msg="ABIERTO AHORA" data-closed-msg="CERRADO · VOLVEMOS PRONTO"><span class="dot"></span><span data-open-txt>ABIERTO AHORA</span></div>
-    <div class="kicker">${esc(t.kicker)}</div>
-    <h1>${esc(spec.business)}</h1>
-    <p>${contact ? esc(contact) + ' · ' : ''}Te lo ponemos fácil: mira, toca y pide.</p>
-    <div class="cta-row"><a class="btn" href="#s1">Ver más</a><a class="btn ghost" href="#s3">${esc(t.cta)}</a></div>
-    <div class="badges"><div><b>✓</b>${contact ? esc(contact) : 'Pídenos los datos'}</div><div><b>24h</b>demo gratuita</div><div><b>★</b>hecha a medida</div></div>
+    <div class="kicker">DE BARRIO, DE VERDAD</div>
+    <h1>ColadaMax</h1>
+    <p>Av. Santa Icia 7, Naron · 34717712250 · Te lo ponemos fácil: mira, toca y pide.</p>
+    <div class="cta-row"><a class="btn" href="#s1">Ver más</a><a class="btn ghost" href="#s3">Encargar</a></div>
+    <div class="badges"><div><b>✓</b>Av. Santa Icia 7, Naron · 34717712250</div><div><b>24h</b>demo gratuita</div><div><b>★</b>hecha a medida</div></div>
   </div>
 </header>
 <script>addEventListener('scroll',function(){var h=document.documentElement,p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;document.getElementById('progress').style.width=p+'%'},{passive:true})</script>
-  <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>${(MARQUEE[spec.sector] || MARQUEE.negocio).map(w => esc(w) + ' ✦ ').join('').repeat(2)}</span><span>${(MARQUEE[spec.sector] || MARQUEE.negocio).map(w => esc(w) + ' ✦ ').join('').repeat(2)}</span></div></div>
+  <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>HECHO AQUÍ ✦ COMERCIO LOCAL ✦ ENVOLTORIO GRATIS ✦ DE BARRIO ✦ HECHO AQUÍ ✦ COMERCIO LOCAL ✦ ENVOLTORIO GRATIS ✦ DE BARRIO ✦ </span><span>HECHO AQUÍ ✦ COMERCIO LOCAL ✦ ENVOLTORIO GRATIS ✦ DE BARRIO ✦ HECHO AQUÍ ✦ COMERCIO LOCAL ✦ ENVOLTORIO GRATIS ✦ DE BARRIO ✦ </span></div></div>
 <section id="s1">
-  <div class="k">${esc(t.kicker)}</div>
-  <h2>${esc(s.s1[0])}</h2>
-  <p class="sub">${esc(s.s1[1])} Precios orientativos: los fijamos juntos con tu carta real.</p>
-${items}
+  <div class="k">DE BARRIO, DE VERDAD</div>
+  <h2>La tienda</h2>
+  <p class="sub">Selección del barrio. Precios orientativos: los fijamos juntos con tu carta real.</p>
+      <div class="dish" style="animation-delay:0ms"><img loading="lazy" src="https://images.pexels.com/photos/38886679/pexels-photo-38886679.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt=""><div><h4>Lo más vendido</h4><p>Selección de la casa</p> <a data-wa-biz data-wa-text="Hola ColadaMax, quiero pedir: Lo más vendido. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">desde 12 €</div></div>
+      <div class="dish" style="animation-delay:70ms"><img loading="lazy" src="https://images.pexels.com/photos/34237417/pexels-photo-34237417.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt=""><div><h4>Encargo personalizado</h4><p>Lo preparamos a tu gusto</p> <a data-wa-biz data-wa-text="Hola ColadaMax, quiero pedir: Encargo personalizado. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">a convenir</div></div>
+      <div class="dish" style="animation-delay:140ms"><img loading="lazy" src="https://images.pexels.com/photos/5845673/pexels-photo-5845673.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt=""><div><h4>Tarjeta regalo</h4><p>Para que elijan ellos</p> <a data-wa-biz data-wa-text="Hola ColadaMax, quiero pedir: Tarjeta regalo. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">20–50 €</div></div>
+      <div class="dish" style="animation-delay:210ms"><img loading="lazy" src="https://images.pexels.com/photos/2309235/pexels-photo-2309235.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt=""><div><h4>Envoltorio</h4><p>Siempre incluido</p> <a data-wa-biz data-wa-text="Hola ColadaMax, quiero pedir: Envoltorio. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">gratis</div></div>
 </section>
 <section id="s2">
   <div class="k">ASÍ SE VE</div>
   <h2>Fotos</h2>
   <p class="sub">Fotos de muestra de tu sector. En tu web pondríamos las tuyas.</p>
   <div class="grid">
-${gallery}
+    <figure><img loading="lazy" src="https://images.pexels.com/photos/38886679/pexels-photo-38886679.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 1 de ColadaMax"></figure>
+    <figure><img loading="lazy" src="https://images.pexels.com/photos/34237417/pexels-photo-34237417.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 2 de ColadaMax"></figure>
+    <figure><img loading="lazy" src="https://images.pexels.com/photos/5845673/pexels-photo-5845673.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 3 de ColadaMax"></figure>
+    <figure><img loading="lazy" src="https://images.pexels.com/photos/2309235/pexels-photo-2309235.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 4 de ColadaMax"></figure>
   </div>
 </section>
 <section id="s3">
@@ -238,22 +149,16 @@ ${gallery}
       <div class="ok" data-lead-ok>✓ ¡Enviado al WhatsApp del negocio! Te contestan enseguida.</div>
     </form>
     <div class="hours">
-      <h3>${esc(spec.business)}</h3>
-      <ul><li>${contact ? esc(contact) : 'Pídenos los datos por WhatsApp'}</li>${spec.phone ? `<li><a href="tel:+${spec.phone.replace(/\D/g, '')}">Llamar: ${esc(spec.phone)}</a></li>` : ''}</ul>
-      ${spec.address ? `<iframe class="mapframe" loading="lazy" title="Mapa" src="https://www.google.com/maps?q=${encodeURIComponent(spec.address)}&output=embed"></iframe>` : ''}
+      <h3>ColadaMax</h3>
+      <ul><li>Av. Santa Icia 7, Naron · 34717712250</li><li><a href="tel:+34717712250">Llamar: 34717712250</a></li></ul>
+      <iframe class="mapframe" loading="lazy" title="Mapa" src="https://www.google.com/maps?q=Av.%20Santa%20Icia%207%2C%20Naron&output=embed"></iframe>
     </div>
   </div>
 </section>
-<footer>${esc(spec.business)}${contact ? ' · ' + esc(contact) : ''} · Demo de Noira · Visible 24h, luego se apaga sola</footer>
-${bizWa ? `<div class="orderbar"><a data-wa-biz data-wa-text="Hola ${esc(spec.business)}, os escribo desde vuestra web." href="#">Pedir por WhatsApp</a></div>` : ''}
-<a class="wa" id="waFloat" data-wa-biz data-wa-text="Hola ${esc(spec.business)}, he visto vuestra web y quiero información." href="#" aria-label="WhatsApp">✆</a>
-<script src="/demo-assets/engine.js" data-slug="${spec.slug}"></script>
-<script>${fxScript}</script>
+<footer>ColadaMax · Av. Santa Icia 7, Naron · 34717712250 · Demo de Noira · Visible 24h, luego se apaga sola</footer>
+<div class="orderbar"><a data-wa-biz data-wa-text="Hola ColadaMax, os escribo desde vuestra web." href="#">Pedir por WhatsApp</a></div>
+<a class="wa" id="waFloat" data-wa-biz data-wa-text="Hola ColadaMax, he visto vuestra web y quiero información." href="#" aria-label="WhatsApp">✆</a>
+<script src="/demo-assets/engine.js" data-slug="coladamax"></script>
+<script></script>
 </body>
-</html>`;
-}
-
-export function slugify(name: string): string {
-  return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'negocio';
-}
+</html>
