@@ -275,6 +275,26 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
     return json(200, { stats: marketing.outreachStats(), targets: marketing.targetStats(), recent: marketing.listOutreach(undefined, 30) });
   }
+  // SerpApi enrichment (cached 30 days — every query paid once, never repaid).
+  if (url.pathname === '/api/enrich/search' && req.method === 'GET') {
+    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
+    const q = String(url.searchParams.get('q') || '').slice(0, 80);
+    const ll = String(url.searchParams.get('ll') || '').slice(0, 40);
+    if (!q || !ll) return json(400, { error: 'q + ll required (ll like @43.4832,-8.2369,14z)' });
+    try {
+      const { places, cached } = await (await import('./enrich/SerpApi.js')).searchPlaces(q, ll, url.searchParams.get('hl') || 'es');
+      return json(200, { places, cached, cache: (await import('./enrich/SerpApi.js')).cacheStats() });
+    } catch (e: any) { return json(502, { error: e.message }); }
+  }
+  if (url.pathname === '/api/enrich/place' && req.method === 'GET') {
+    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
+    const dataId = String(url.searchParams.get('data_id') || '').slice(0, 120);
+    if (!dataId) return json(400, { error: 'data_id required' });
+    try {
+      const { place, cached } = await (await import('./enrich/SerpApi.js')).enrichPlace(dataId, url.searchParams.get('hl') || 'es');
+      return json(200, { place, cached });
+    } catch (e: any) { return json(502, { error: e.message }); }
+  }
   // Demo config: the demo page fetches this to wire OUR WhatsApp + prefilled text.
   if (url.pathname.startsWith('/api/demos/') && req.method === 'GET') {
     const slug = decodeURIComponent(url.pathname.slice('/api/demos/'.length).split('/')[0]);
@@ -546,27 +566,6 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     if (token && req.headers['x-backup-token'] !== token) return json(401, { error: 'backup token required' });
     try { return json(200, { result: await agencyIteration() }); }
     catch (e: any) { return json(500, { error: e.message }); }
-  }
-  if (url.pathname === '/api/enrich/search' && req.method === 'GET') {
-    // Cheap discovery: 1 SerpApi call → ~20 businesses (cached 30 days, never repaid).
-    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
-    const q = String(url.searchParams.get('q') || '').slice(0, 80);
-    const ll = String(url.searchParams.get('ll') || '').slice(0, 40);
-    if (!q || !ll) return json(400, { error: 'q + ll required (ll like @43.4832,-8.2369,14z)' });
-    try {
-      const { places, cached } = await (await import('./enrich/SerpApi.js')).searchPlaces(q, ll, url.searchParams.get('hl') || 'es');
-      return json(200, { places, cached, cache: (await import('./enrich/SerpApi.js')).cacheStats() });
-    } catch (e: any) { return json(502, { error: e.message }); }
-  }
-  if (url.pathname === '/api/enrich/place' && req.method === 'GET') {
-    // Deep dive: reviews + photos of ONE hot candidate (2 calls, cached 30 days).
-    if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
-    const dataId = String(url.searchParams.get('data_id') || '').slice(0, 120);
-    if (!dataId) return json(400, { error: 'data_id required' });
-    try {
-      const { place, cached } = await (await import('./enrich/SerpApi.js')).enrichPlace(dataId, url.searchParams.get('hl') || 'es');
-      return json(200, { place, cached });
-    } catch (e: any) { return json(502, { error: e.message }); }
   }
   if (url.pathname === '/api/restore' && req.method === 'POST') {
     // Re-upload a mind after a cloud restart wiped the ephemeral disk.
