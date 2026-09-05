@@ -144,7 +144,6 @@ text-decoration:none;font-family:'Space Grotesk',Verdana,sans-serif;font-weight:
     <div class="stamp">FAIT<br>À<br>FÈS</div>
   </div>
 </header>
-.herovideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22;pointer-events:none}.hero{position:relative}.hero>div:not(.herovideo){position:relative;z-index:2}.lead::first-letter{font-size:2.6em;float:left;line-height:.85;padding-right:8px;color:var(--gold);font-weight:900}
 <div class="marquee" aria-hidden="true" style="overflow:hidden;border-top:2px solid #1c1710;border-bottom:2px solid #1c1710;background:#1c1710;color:#e8c85c"><div class="marquee-track" style="display:inline-flex;white-space:nowrap;padding:11px 0;animation:mslide 24s linear infinite;font-size:11px;letter-spacing:4px;font-weight:700;font-family:Verdana,sans-serif"><span>LIVRES - PAPETERIE - PHOTOCOPIES - FES -&nbsp;</span><span>LIVRES - PAPETERIE - PHOTOCOPIES - FES -&nbsp;</span></div></div><style>@keyframes mslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}</style>
 
 <section id="rayons">
@@ -249,7 +248,6 @@ document.getElementById('burger').addEventListener('click',function(){
   document.getElementById('navLinks').classList.toggle('open');
 });
 </script>
-.herovideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22;pointer-events:none}.hero{position:relative}.hero>div:not(.herovideo){position:relative;z-index:2}.lead::first-letter{font-size:2.6em;float:left;line-height:.85;padding-right:8px;color:var(--gold);font-weight:900}
 <style>.dots a.on{background:#9a6b1e !important;box-shadow:0 0 10px #9a6b1e;transform:scale(1.35)}@media(max-width:760px){.dots{display:none}}</style><script>(function(){var secs=["rayons","maison","avis","visite"].map(function(id){return document.getElementById(id)});var dots=Array.prototype.slice.call(document.querySelectorAll(".dots a"));function onS(){var cur="rayons";secs.forEach(function(s){if(s&&s.getBoundingClientRect().top<innerHeight*.4)cur=s.id});dots.forEach(function(d){d.classList.toggle("on",d.dataset.sec===cur)})}addEventListener("scroll",onS,{passive:true});onS()})();</script>
 </body>
 </html>
