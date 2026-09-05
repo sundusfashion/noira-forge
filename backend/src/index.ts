@@ -157,7 +157,7 @@ async function agencyIteration(): Promise<string> {
 function outreachTemplate(business: string, demoUrl: string): { subject: string; body: string } {
   return {
     subject: `Una web de regalo para ${business}`,
-    body: `Hola, soy Noira. Vi ${business} y me gustó lo que hacéis. Os he preparado una web de regalo para que la veáis:\n${demoUrl}\n\nEstá visible 24h. Si os gusta, os la dejo con un dominio bonito y mantenimiento mensual de todo. Os apetece que os la enseñe?\n\nUn saludo,\nNoira\n\nSi no queréis más correos, responded "baja" y no volvemos a escribir.`,
+    body: `Hola, soy Noira. Vi ${business} y me gustó lo que hacéis. Os he preparado una web de regalo para que la veáis:\n${demoUrl}\n\nEstá visible 24h. Si os gusta, os la dejo con un dominio bonito y mantenimiento mensual de todo. Y tranquilos: después del acuerdo os pido lo que necesite (carta, fotos) de forma fácil y divertida, sin agobios. Os apetece que os la enseñe?\n\nUn saludo,\nNoira\n\nSi no queréis más correos, responded "baja" y no volvemos a escribir.`,
   };
 }
 
@@ -165,7 +165,7 @@ async function composeOutreach(business: string, sector: string, demoUrl: string
   const fallback = outreachTemplate(business, demoUrl);
   try {
     const r = await hiring.postAndExecute('copywriter',
-      `Escribe un email comercial en español (sin emojis, sin precios) para ${business} (${sector}). Incluye su demo: ${demoUrl} (visible 24h). Tono amable, indirecto, 120 palabras max. Primera línea: "Asunto: ..." y luego el cuerpo. Termina ofreciendo enseñarla y con firma "Noira".`, 25);
+      `Escribe un email comercial en español (sin emojis, sin precios) para ${business} (${sector}). Incluye su demo: ${demoUrl} (visible 24h). Añade que tras el acuerdo pediremos carta y fotos de forma fácil y divertida, sin agobios. Tono amable, indirecto, 130 palabras max. Primera línea: "Asunto: ..." y luego el cuerpo. Termina ofreciendo enseñarla y con firma "Noira".`, 25);
     const text = String(r.output);
     const subject = (text.match(/Asunto:\s*(.+)/i)?.[1] || fallback.subject).slice(0, 120);
     const body = text.replace(/Asunto:.*\n/i, '').trim().slice(0, 2000) || fallback.body;
