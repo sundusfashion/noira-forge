@@ -119,7 +119,7 @@ async function handleChat(message: string): Promise<string> {
 
 import { CommandSchema, ChatSchema, InvestSchema, SpawnSchema, DreamSchema, RateLimiter, clientIp } from './api/guard.js';
 import { MarketingStore, mdToHtml } from './marketing/Marketing.js';
-import { getDemo, ensureShowcase, createDemo, isExpired, expiredPage } from './demos/Demos.js';
+import { getDemo, ensureShowcase, ensurePitch, createDemo, isExpired, expiredPage } from './demos/Demos.js';
 import { searchPhotos, searchVideos } from './media/Pexels.js';
 import { findLeadsCached, loadCache, saveCache } from './leads/Leads.js';
 import { sendEmail, checkInbox } from './outreach/Mailer.js';
@@ -174,6 +174,12 @@ async function composeOutreach(business: string, sector: string, demoUrl: string
 }
 
 ensureShowcase('casa-elena', 'Asador Casa Elena');
+// Active pitches re-arm themselves on every boot (24-72h rolling windows).
+ensurePitch('taperia-plaza', 'Taperia Plaza', '34638372430', 72);
+ensurePitch('librairie-lumiere', 'Librairie Lumiere Future', '212638016679', 24);
+ensurePitch('pulperia-la-isla', 'Pulpería La Isla', '', 24);
+ensurePitch('salem', 'Salem Cafe', '', 24);
+ensurePitch('ruda', 'Ruda', '', 24);
 
 const marketing = new MarketingStore('./data');
 

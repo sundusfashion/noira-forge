@@ -33,6 +33,20 @@ export function ensureShowcase(slug: string, business: string): DemoRecord {
   return all[slug];
 }
 
+// Re-arm on every boot (ephemeral disks wipe the registry): known pitches come back alone.
+export function ensurePitch(slug: string, business: string, phone: string, hours: number): DemoRecord {
+  const all = load();
+  const cur = all[slug];
+  if (!cur || (cur.expiresAt !== null && cur.expiresAt < Date.now())) {
+    all[slug] = { slug, business, createdAt: Date.now(), expiresAt: Date.now() + hours * 3600_000, phone };
+    save(all);
+  } else if (!cur.phone && phone) {
+    cur.phone = phone;
+    save(all);
+  }
+  return all[slug];
+}
+
 export function createDemo(slug: string, business: string, hours = 24, phone = ''): DemoRecord {
   const all = load();
   const rec: DemoRecord = { slug, business, createdAt: Date.now(), expiresAt: Date.now() + hours * 3600_000, phone };
