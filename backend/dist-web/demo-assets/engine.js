@@ -52,7 +52,8 @@
   }, { threshold: 0.5 });
   $$('[data-count]').forEach(function (el) { cio.observe(el); });
 
-  /* 4. Reveal on scroll. .reveal */
+  /* 4. Reveal on scroll. Auto-marca sections + observa .reveal */
+  $$('section,.hero-inner').forEach(function (el) { el.classList.add('reveal'); });
   var rio = new IntersectionObserver(function (es) {
     es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); rio.unobserve(e.target); } });
   }, { threshold: 0.12 });
@@ -136,6 +137,28 @@
     }).catch(function () {});
   }
 
+  /* 13b. WhatsApp del NEGOCIO. [data-wa-biz] usa su teléfono; el banner (#demoCta) sigue siendo NUESTRO. */
+  var BIZ = { phone: '', business: '' };
+  function bizUrl(text) {
+    return 'https://wa.me/' + BIZ.phone + '?text=' + encodeURIComponent(text);
+  }
+  function fill(tpl, data) {
+    return String(tpl || '').replace(/\{(\w+)\}/g, function (_, k) {
+      if (k === 'business') return BIZ.business || '';
+      return data[k] != null ? data[k] : '';
+    });
+  }
+  if (SLUG) {
+    fetch('/api/demos/' + SLUG).then(function (r) { return r.json(); }).then(function (cfg) {
+      if (!cfg.businessPhone) return;
+      BIZ = { phone: String(cfg.businessPhone).replace(/\D/g, ''), business: cfg.business || '' };
+      if (!BIZ.phone) return;
+      $$('[data-wa-biz]').forEach(function (a) {
+        a.href = bizUrl(fill(a.dataset.waText || 'Hola, he visto vuestra web y quiero información.', {}));
+      });
+    }).catch(function () {});
+  }
+
   /* 13. Formulario → lead real. form[data-lead] */
   $$('form[data-lead]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
@@ -147,12 +170,17 @@
       });
       if (btn) btn.textContent = 'Enviando…';
       fetch('/api/demo-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-        .then(function (r) { if (!r.ok) throw 0; ok(form, btn); })
-        .catch(function () { ok(form, btn); });
-      function ok(f, b) {
+        .then(function (r) { if (!r.ok) throw 0; ok(form, btn, data); })
+        .catch(function () { ok(form, btn, data); });
+      function ok(f, b, d) {
         var box = f.querySelector('[data-lead-ok]');
         if (box) box.style.display = 'block';
         if (b) b.textContent = '✓ Recibido';
+        // Además abre el WhatsApp DEL NEGOCIO con los datos del visitante ya escritos.
+        if (f.hasAttribute('data-wa-open') && BIZ.phone) {
+          var tpl = f.dataset.waTemplate || 'Hola {business}, soy {nombre} ({telefono}).';
+          window.open(bizUrl(fill(tpl, d || {})), '_blank');
+        }
       }
     });
   });
