@@ -48,7 +48,16 @@ h2{font-family:var(--font-d);font-size:clamp(28px,5vw,46px);margin-bottom:14px}
 .dish h4{font-size:17px}.dish p{color:var(--muted);font-size:13.5px;margin-top:3px}
 .price{font-family:var(--font-d);font-weight:800;color:var(--gold);font-size:18px;white-space:nowrap}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.grid img{width:100%;height:230px;object-fit:cover;border-radius:14px}
+.grid figure{position:relative;margin:0;border-radius:14px;overflow:hidden}
+.grid img{width:100%;height:230px;object-fit:cover;display:block;filter:saturate(.92) contrast(1.06);transition:transform .3s}
+.grid figure::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,var(--coal) 130%),linear-gradient(120deg,transparent 60%,var(--acc) 160%);opacity:.55;pointer-events:none}
+.grid figure:hover img{transform:scale(1.05)}
+.dish img{width:64px;height:64px;border-radius:12px;object-fit:cover;flex:none;border:1px solid var(--line)}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),var(--acc));z-index:99}
+.grain{position:fixed;inset:0;z-index:98;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+.btn{position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);animation:shine 4s ease-in-out infinite}
+@keyframes shine{0%,60%{left:-80%}100%{left:160%}}
 .rev-track{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .rev{background:var(--coal);border:1px solid var(--line);border-radius:16px;padding:22px}
 .rev .stars{color:var(--gold);letter-spacing:3px;margin-bottom:10px}
@@ -76,6 +85,8 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
 </style>
 </head>
 <body>
+<div class="progress" id="progress"></div>
+<div class="grain" aria-hidden="true"></div>
 <div class="demo-bar">⚡ WEB DEMO para Taperia Plaza · <span data-countdown>Visible 24h</span> · ¿Te gusta? <a id="demoCta" href="#" style="color:#000"><b>Escríbenos por WhatsApp</b></a></div>
 <nav class="nav">
   <div class="brand">TAPERIA</div>
@@ -90,27 +101,29 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
     <h1>Taperia Plaza</h1>
     <p>Calle Apelon 17, Mugardos · 34638372430 · Te lo ponemos fácil: mira, toca y pide.</p>
     <div class="cta-row"><a class="btn" href="#s1">Ver más</a><a class="btn ghost" href="#s3">Reservar mesa</a></div>
+    <div class="badges"><div><b>✓</b>Calle Apelon 17, Mugardos · 34638372430</div><div><b>24h</b>demo gratuita</div><div><b>★</b>hecha a medida</div></div>
   </div>
 </header>
+<script>addEventListener('scroll',function(){var h=document.documentElement,p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;document.getElementById('progress').style.width=p+'%'},{passive:true})</script>
   <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>BRASA ✦ PRODUCTO DE AQUÍ ✦ SIN PRISAS ✦ DE BARRIO ✦ BRASA ✦ PRODUCTO DE AQUÍ ✦ SIN PRISAS ✦ DE BARRIO ✦ </span><span>BRASA ✦ PRODUCTO DE AQUÍ ✦ SIN PRISAS ✦ DE BARRIO ✦ BRASA ✦ PRODUCTO DE AQUÍ ✦ SIN PRISAS ✦ DE BARRIO ✦ </span></div></div>
 <section id="s1">
   <div class="k">DE LA TIERRA A LA MESA</div>
   <h2>La carta</h2>
   <p class="sub">Producto de cercanía, precios de barrio. Precios orientativos: los fijamos juntos con tu carta real.</p>
-      <div class="dish" style="animation-delay:0ms"><div><h4>Plato de la casa</h4><p>Receta tradicional</p> <a data-wa-biz data-wa-text="Hola Taperia Plaza, quiero pedir: Plato de la casa. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">14,50 €</div></div>
-      <div class="dish" style="animation-delay:70ms"><div><h4>Especialidad</h4><p>Pregunta en barra</p> <a data-wa-biz data-wa-text="Hola Taperia Plaza, quiero pedir: Especialidad. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">16,00 €</div></div>
-      <div class="dish" style="animation-delay:140ms"><div><h4>Menú del día</h4><p>De lunes a viernes</p> <a data-wa-biz data-wa-text="Hola Taperia Plaza, quiero pedir: Menú del día. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">15,00 €</div></div>
-      <div class="dish" style="animation-delay:210ms"><div><h4>Postre casero</h4><p>Hecho aquí</p> <a data-wa-biz data-wa-text="Hola Taperia Plaza, quiero pedir: Postre casero. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">5,50 €</div></div>
+      <div class="dish" style="animation-delay:0ms"><img loading="lazy" src="https://images.pexels.com/photos/37120985/pexels-photo-37120985.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt=""><div><h4>Plato de la casa</h4><p>Receta tradicional</p> <a data-wa-biz data-wa-text="Hola Taperia Plaza, quiero pedir: Plato de la casa. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">14,50 €</div></div>
+      <div class="dish" style="animation-delay:70ms"><img loading="lazy" src="https://images.pexels.com/photos/28760166/pexels-photo-28760166.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt=""><div><h4>Especialidad</h4><p>Pregunta en barra</p> <a data-wa-biz data-wa-text="Hola Taperia Plaza, quiero pedir: Especialidad. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">16,00 €</div></div>
+      <div class="dish" style="animation-delay:140ms"><img loading="lazy" src="https://images.pexels.com/photos/868790/pexels-photo-868790.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt=""><div><h4>Menú del día</h4><p>De lunes a viernes</p> <a data-wa-biz data-wa-text="Hola Taperia Plaza, quiero pedir: Menú del día. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">15,00 €</div></div>
+      <div class="dish" style="animation-delay:210ms"><img loading="lazy" src="https://images.pexels.com/photos/28760169/pexels-photo-28760169.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt=""><div><h4>Postre casero</h4><p>Hecho aquí</p> <a data-wa-biz data-wa-text="Hola Taperia Plaza, quiero pedir: Postre casero. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a></div><div class="price">5,50 €</div></div>
 </section>
 <section id="s2">
   <div class="k">ASÍ SE VE</div>
   <h2>Fotos</h2>
   <p class="sub">Fotos de muestra de tu sector. En tu web pondríamos las tuyas.</p>
   <div class="grid">
-    <img loading="lazy" src="https://images.pexels.com/photos/37120985/pexels-photo-37120985.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 1 de Taperia Plaza">
-    <img loading="lazy" src="https://images.pexels.com/photos/28760166/pexels-photo-28760166.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 2 de Taperia Plaza">
-    <img loading="lazy" src="https://images.pexels.com/photos/868790/pexels-photo-868790.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 3 de Taperia Plaza">
-    <img loading="lazy" src="https://images.pexels.com/photos/28760169/pexels-photo-28760169.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 4 de Taperia Plaza">
+    <figure><img loading="lazy" src="https://images.pexels.com/photos/37120985/pexels-photo-37120985.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 1 de Taperia Plaza"></figure>
+    <figure><img loading="lazy" src="https://images.pexels.com/photos/28760166/pexels-photo-28760166.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 2 de Taperia Plaza"></figure>
+    <figure><img loading="lazy" src="https://images.pexels.com/photos/868790/pexels-photo-868790.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 3 de Taperia Plaza"></figure>
+    <figure><img loading="lazy" src="https://images.pexels.com/photos/28760169/pexels-photo-28760169.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Foto 4 de Taperia Plaza"></figure>
   </div>
 </section>
 <section id="s3">

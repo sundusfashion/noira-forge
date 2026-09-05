@@ -70,8 +70,8 @@ export function buildDemoSite(spec: DemoSpec): string {
     ? ` <a data-wa-biz data-wa-text="Hola ${esc(spec.business)}, quiero pedir: ${d}. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a>`
     : '';
   const photos = spec.photos.slice(0, 4);
-  const gallery = photos.map((u, i) => `    <img loading="lazy" src="${u}" alt="Foto ${i + 1} de ${esc(spec.business)}">`).join('\n');
-  const items = s.items.map((d, i) => `      <div class="dish" style="animation-delay:${i * 70}ms"><div><h4>${d[0]}</h4><p>${d[1]}</p>${dishOrder(d[0])}</div><div class="price">${d[2]}</div></div>`).join('\n');
+  const gallery = photos.map((u, i) => `    <figure><img loading="lazy" src="${u}" alt="Foto ${i + 1} de ${esc(spec.business)}"></figure>`).join('\n');
+  const items = s.items.map((d, i) => `      <div class="dish" style="animation-delay:${i * 70}ms"><img loading="lazy" src="${photos[i % Math.max(1, photos.length)]}" alt=""><div><h4>${d[0]}</h4><p>${d[1]}</p>${dishOrder(d[0])}</div><div class="price">${d[2]}</div></div>`).join('\n');
   const videoBg = spec.video
     ? `<video autoplay muted loop playsinline poster="${photos[0] || ''}"><source src="${spec.video}" type="video/mp4"></video>`
     : `<canvas id="fx"></canvas>`;
@@ -134,7 +134,16 @@ h2{font-family:var(--font-d);font-size:clamp(28px,5vw,46px);margin-bottom:14px}
 .dish h4{font-size:17px}.dish p{color:var(--muted);font-size:13.5px;margin-top:3px}
 .price{font-family:var(--font-d);font-weight:800;color:var(--gold);font-size:18px;white-space:nowrap}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.grid img{width:100%;height:230px;object-fit:cover;border-radius:14px}
+.grid figure{position:relative;margin:0;border-radius:14px;overflow:hidden}
+.grid img{width:100%;height:230px;object-fit:cover;display:block;filter:saturate(.92) contrast(1.06);transition:transform .3s}
+.grid figure::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,var(--coal) 130%),linear-gradient(120deg,transparent 60%,var(--acc) 160%);opacity:.55;pointer-events:none}
+.grid figure:hover img{transform:scale(1.05)}
+.dish img{width:64px;height:64px;border-radius:12px;object-fit:cover;flex:none;border:1px solid var(--line)}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),var(--acc));z-index:99}
+.grain{position:fixed;inset:0;z-index:98;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+.btn{position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);animation:shine 4s ease-in-out infinite}
+@keyframes shine{0%,60%{left:-80%}100%{left:160%}}
 .rev-track{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .rev{background:var(--coal);border:1px solid var(--line);border-radius:16px;padding:22px}
 .rev .stars{color:var(--gold);letter-spacing:3px;margin-bottom:10px}
@@ -162,6 +171,8 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
 </style>
 </head>
 <body>
+<div class="progress" id="progress"></div>
+<div class="grain" aria-hidden="true"></div>
 <div class="demo-bar">⚡ WEB DEMO para ${esc(spec.business)} · <span data-countdown>Visible 24h</span> · ¿Te gusta? <a id="demoCta" href="#" style="color:#000"><b>Escríbenos por WhatsApp</b></a></div>
 <nav class="nav">
   <div class="brand">${esc(spec.business.split(' ')[0].toUpperCase())}</div>
@@ -176,8 +187,10 @@ footer{border-top:1px solid var(--line);padding:30px 26px;text-align:center;colo
     <h1>${esc(spec.business)}</h1>
     <p>${contact ? esc(contact) + ' · ' : ''}Te lo ponemos fácil: mira, toca y pide.</p>
     <div class="cta-row"><a class="btn" href="#s1">Ver más</a><a class="btn ghost" href="#s3">${esc(t.cta)}</a></div>
+    <div class="badges"><div><b>✓</b>${contact ? esc(contact) : 'Pídenos los datos'}</div><div><b>24h</b>demo gratuita</div><div><b>★</b>hecha a medida</div></div>
   </div>
 </header>
+<script>addEventListener('scroll',function(){var h=document.documentElement,p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;document.getElementById('progress').style.width=p+'%'},{passive:true})</script>
   <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>${(MARQUEE[spec.sector] || MARQUEE.negocio).map(w => esc(w) + ' ✦ ').join('').repeat(2)}</span><span>${(MARQUEE[spec.sector] || MARQUEE.negocio).map(w => esc(w) + ' ✦ ').join('').repeat(2)}</span></div></div>
 <section id="s1">
   <div class="k">${esc(t.kicker)}</div>
