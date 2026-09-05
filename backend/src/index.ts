@@ -560,6 +560,53 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       return json(200, { ok: true, queued: n, stats: marketing.targetStats() });
     } catch { return json(400, { error: 'invalid JSON' }); }
   }
+  if (url.pathname === '/api/outreach/stagger' && req.method === 'POST') {
+    // Spread all unscheduled targets across days/hours (warmup ramp). Returns coverage.
+    const token = process.env.BACKUP_TOKEN;
+    if (token && req.headers['x-backup-token'] !== token) return json(401, { error: 'backup token required' });
+    const n = marketing.stagger();
+    const first: any = marketing.nextTarget();
+    return json(200, { ok: true, scheduled: n, next: first ? { email: first.email, business: first.business, scheduled_for: first.scheduled_for } : null });
+  }
+  if (url.pathname === '/api/leads/harvest' && req.method === 'POST') {
+    // Autonomous national sweep: OSM email scan per city → targets. { cities: [{name,lat,lon,radius}] }
+    const token = process.env.BACKUP_TOKEN;
+    if (token && req.headers['x-backup-token'] !== token) return json(401, { error: 'backup token required' });
+    let b: any;
+    try { b = JSON.parse(raw || '{}'); } catch { return json(400, { error: 'invalid JSON' }); }
+    const cities = Array.isArray(b.cities) ? b.cities.slice(0, 10) : [];
+    if (!cities.length) return json(400, { error: 'cities[] required' });
+    const { sectorOf } = await import('./leads/Leads.js');
+    let added = 0;
+    const perCity: any[] = [];
+    for (const c of cities) {
+      try {
+        const lat = Number(c.lat), lon = Number(c.lon);
+        const radius = Math.min(8000, Math.max(500, Number(c.radius || 4000)));
+        if (!isFinite(lat) || !isFinite(lon)) continue;
+        const q = `[out:json][timeout:25];(node["contact:email"](around:${radius},${lat},${lon});node["email"](around:${radius},${lat},${lon}););out tags center 100;`;
+        const r = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json', 'User-Agent': 'NoiraForge/1.0 (lead radar)' },
+          body: 'data=' + encodeURIComponent(q),
+        });
+        if (!r.ok) { perCity.push({ city: c.name, error: 'overpass ' + r.status }); continue; }
+        const j: any = await r.json();
+        let n = 0;
+        for (const el of j.elements || []) {
+          const tags = el.tags || {};
+          if (!tags.name) continue;
+          const email = String(tags['contact:email'] || tags.email || '').toLowerCase().slice(0, 120);
+          if (!email.includes('@')) continue;
+          marketing.upsertTarget({ email, business: String(tags.name).slice(0, 80), sector: sectorOf(tags), phone: '', address: '' });
+          n++;
+        }
+        added += n;
+        perCity.push({ city: c.name, added: n });
+      } catch (e: any) { perCity.push({ city: c.name, error: e.message }); }
+    }
+    return json(200, { ok: true, added, perCity, targets: marketing.targetStats() });
+  }
   if (url.pathname === '/api/agency/run' && req.method === 'POST') {
     // Manual trigger of one autonomous cycle (backup token). The scheduler runs it daily alone.
     const token = process.env.BACKUP_TOKEN;

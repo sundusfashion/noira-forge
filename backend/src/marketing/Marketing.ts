@@ -30,10 +30,12 @@ export class MarketingStore {
         followups INTEGER DEFAULT 0, created_at INTEGER NOT NULL
       );
       CREATE INDEX IF NOT EXISTS idx_out_status ON outreach(status);
+      try { this.db.exec(`ALTER TABLE targets ADD COLUMN scheduled_for INTEGER DEFAULT 0`); } catch { /* exists */ }
       CREATE TABLE IF NOT EXISTS targets (
         email TEXT PRIMARY KEY, business TEXT NOT NULL, sector TEXT DEFAULT 'negocio',
         phone TEXT DEFAULT '', address TEXT DEFAULT '', demo_slug TEXT DEFAULT '',
-        status TEXT DEFAULT 'new', created_at INTEGER NOT NULL
+        status TEXT DEFAULT 'new', created_at INTEGER NOT NULL,
+        scheduled_for INTEGER DEFAULT 0
       );
       CREATE TABLE IF NOT EXISTS demo_leads (
         id TEXT PRIMARY KEY, demo_slug TEXT NOT NULL, nombre TEXT NOT NULL,
@@ -102,7 +104,31 @@ export class MarketingStore {
       .run(t.email.toLowerCase(), t.business, t.sector || 'negocio', t.phone || '', t.address || '', Date.now());
   }
   nextTarget(): any | null {
-    return this.db.prepare(`SELECT * FROM targets WHERE status='new' ORDER BY created_at ASC LIMIT 1`).get() ?? null;
+    // Only targets whose scheduled day arrived (0 = anytime).
+    return this.db.prepare(`SELECT * FROM targets WHERE status='new' AND (scheduled_for IS NULL OR scheduled_for = 0 OR scheduled_for <= ?) ORDER BY scheduled_for ASC, created_at ASC LIMIT 1`).get(Date.now()) ?? null;
+  }
+  // Stagger unscheduled targets across days following the warmup ramp.
+  // Default: 5/day × 7d, 10/day × 7d, 18/day × 7d, then 25/day.
+  stagger(plan: { perDay: number; days: number }[] = [{ perDay: 5, days: 7 }, { perDay: 10, days: 7 }, { perDay: 18, days: 7 }, { perDay: 25, days: 365 }]): number {
+    const pending: any[] = this.db.prepare(
+      `SELECT email FROM targets WHERE status='new' AND (scheduled_for IS NULL OR scheduled_for = 0) ORDER BY created_at ASC`
+    ).all();
+    const dayMs = 86400_000;
+    const baseDay = Math.floor(Date.now() / dayMs);
+    let i = 0;
+    let dayOffset = 0;
+    const upd = this.db.prepare(`UPDATE targets SET scheduled_for=? WHERE email=?`);
+    for (const phase of plan) {
+      for (let d = 0; d < phase.days && i < pending.length; d++, dayOffset++) {
+        // send slots spread through the day (9:00–18:00) to look human
+        for (let k = 0; k < phase.perDay && i < pending.length; k++, i++) {
+          const hour = 9 + Math.floor((9 * (k + 1)) / (phase.perDay + 1));
+          const ts = (baseDay + dayOffset) * dayMs + hour * 3600_000 + Math.floor(Math.random() * 1800_000);
+          upd.run(Math.max(ts, Date.now() + 60000), pending[i].email);
+        }
+      }
+    }
+    return pending.length;
   }
   setTarget(email: string, status: string, demoSlug = '') {
     if (demoSlug) this.db.prepare(`UPDATE targets SET status=?, demo_slug=? WHERE email=?`).run(status, demoSlug, email);
