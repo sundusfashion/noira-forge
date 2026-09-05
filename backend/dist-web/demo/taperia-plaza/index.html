@@ -4,7 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tapería Plaza — Brasa de Mugardos</title>
-<meta name="description" content="Tapería Plaza en Apelón 17, Mugardos: brasa, producto de aquí, reserva por WhatsApp. Demo de Noira, visible 72h.">
+<meta name="description" content="Tapería Plaza en Apelón 17, Mugardos: brasa, producto de aquí, reserva por WhatsApp en 20 segundos.">
+<meta property="og:title" content="Tapería Plaza — Brasa de Mugardos">
+<meta property="og:description" content="Reserva en 20 segundos, sin intermediarios. Apelón 17, Mugardos.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://images.pexels.com/photos/18299593/pexels-photo-18299593.jpeg?auto=compress&cs=tinysrgb&h=650&w=940">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b0605">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Restaurant","name":"Tapería Plaza","servesCuisine":["Gallega","Brasa"],
+"telephone":"+34638372430","email":"info@taperiaplaza.com",
+"address":{"@type":"PostalAddress","streetAddress":"Calle Apelón 17","postalCode":"15620","addressLocality":"Mugardos","addressCountry":"ES"},
+"priceRange":"€€","acceptsReservations":"True"}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
 <style>
@@ -123,11 +135,39 @@ color:#fff;text-decoration:none;font-family:Verdana,sans-serif;font-weight:bold;
 .reveal{opacity:0;transform:translateY(34px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
 .reveal.in{opacity:1;transform:none}
 .progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),var(--fire));z-index:99}
+.cursor{position:fixed;width:340px;height:340px;border-radius:50%;pointer-events:none;z-index:3;
+background:radial-gradient(circle,rgba(255,106,26,.14),transparent 65%);transform:translate(-50%,-50%);transition:opacity .3s}
+@media(hover:none){.cursor{display:none}}
+.dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:58;display:flex;flex-direction:column;gap:10px}
+.dots a{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .2s}
+.dots a.on{background:var(--fire);box-shadow:0 0 12px var(--fire);transform:scale(1.3)}
+@media(max-width:820px){.dots{display:none}}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.vs div{border-radius:16px;padding:20px}
+.vs .us{background:rgba(255,106,26,.09);border:1px solid rgba(255,106,26,.45)}
+.vs .them{background:rgba(255,255,255,.03);border:1px solid var(--line);opacity:.75}
+.vs h4{font-family:var(--fd);margin-bottom:10px}
+.vs li{list-style:none;font-size:14px;color:var(--muted);padding:6px 0}
+.vs .us li{color:#f3ddba}
+@media(max-width:700px){.vs{grid-template-columns:1fr}}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.step b{display:flex;width:34px;height:34px;border-radius:50%;background:linear-gradient(180deg,#ff8a3d,#d94e06);
+align-items:center;justify-content:center;font-family:var(--fd);margin-bottom:10px}
+.guarantee{margin-top:26px;border:1px dashed rgba(232,182,76,.6);border-radius:16px;padding:18px 22px;color:#ffe9b0;font-size:14.5px;line-height:1.7}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 @media(max-width:820px){.links{display:none}.hist,.visit{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.grid figure:first-child{grid-column:span 2;min-height:260px}.nav{top:60px}}
 </style>
 </head>
 <body>
 <div class="progress" id="progress"></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<nav class="dots" aria-label="Secciones">
+  <a href="#carta" data-sec="carta" aria-label="Carta"></a>
+  <a href="#casa" data-sec="casa" aria-label="La casa"></a>
+  <a href="#fotos" data-sec="fotos" aria-label="Fotos"></a>
+  <a href="#visita" data-sec="visita" aria-label="Visita"></a>
+</nav>
 <div class="demo-bar">⚡ WEB DEMO para Tapería Plaza · <span data-countdown>Visible 72h</span> · ¿Te gusta? <a id="demoCta" href="#" style="color:#000"><b>Escríbenos por WhatsApp</b></a></div>
 
 <nav class="nav">
@@ -201,8 +241,28 @@ color:#fff;text-decoration:none;font-family:Verdana,sans-serif;font-weight:bold;
   </div>
 </section>
 
+<section id="como">
+  <div class="k">04 · Así de fácil</div>
+  <h2>Reservar <em>sin llamar</em></h2>
+  <p class="sub">Tres pasos. Veinte segundos. Cero intermediarios.</p>
+  <div class="steps">
+    <div class="step"><b>1</b><h4 style="font-family:var(--fd);margin-bottom:6px">Eliges</h4><p style="color:var(--muted);font-size:14px">Rellenas nombre, día y personas.</p></div>
+    <div class="step"><b>2</b><h4 style="font-family:var(--fd);margin-bottom:6px">Se escribe solo</h4><p style="color:var(--muted);font-size:14px">Se abre WhatsApp con todo redactado.</p></div>
+    <div class="step"><b>3</b><h4 style="font-family:var(--fd);margin-bottom:6px">Envías</h4><p style="color:var(--muted);font-size:14px">Un toque y mesa reservada.</p></div>
+  </div>
+  <div style="height:56px"></div>
+  <div class="k">05 · La cuenta clara</div>
+  <h2>Directo <em>sale más barato</em></h2>
+  <p class="sub">Los intermediarios cobran 15–30% por cada reserva. Aquí el 100% es para la casa.</p>
+  <div class="vs">
+    <div class="us"><h4>Reservando aquí</h4><ul><li>✓ Sin comisiones</li><li>✓ Confirmación por WhatsApp</li><li>✓ Trato directo con la casa</li></ul></div>
+    <div class="them"><h4>Intermediarios</h4><ul><li>× 15–30% de comisión</li><li>× Esperas y altas</li><li>× Tus datos para ellos</li></ul></div>
+  </div>
+  <div class="guarantee">Garantía Noira: si esta web no te trae ni una reserva en 30 días, la borramos y te devolvemos la puesta en marcha. Así de seguros estamos.</div>
+</section>
+
 <section id="visita">
-  <div class="k">04 · Sin llamar, sin esperar</div>
+  <div class="k">06 · Sin llamar, sin esperar</div>
   <h2>Reserva <em>en 20 segundos</em></h2>
   <p class="sub">Rellena y se abre nuestro WhatsApp con todo escrito. Tú no haces nada más.</p>
   <div class="visit">
@@ -220,7 +280,7 @@ color:#fff;text-decoration:none;font-family:Verdana,sans-serif;font-weight:bold;
       <h3>Tapería Plaza</h3>
       <ul>
         <li><b>Calle Apelón 17</b>, 15620 Mugardos</li>
-        <li><b>638 372 430</b> · también fijo 981 94 67 94</li>
+        <li><a href="tel:+34638372430" style="color:var(--ember);font-weight:bold">Llamar: 638 372 430</a> · fijo 981 94 67 94</li>
         <li><b>info@taperiaplaza.com</b></li>
         <li>Comidas 13:00–15:30 · orientativo, lo fijamos juntos</li>
       </ul>
@@ -275,6 +335,22 @@ __paintTab('b');
 document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
 document.querySelector('.tab').classList.add('on');
 wireBiz();
+// cursor glow + parallax hero + dots activos
+(function(){
+  var cur=document.getElementById('cursor');
+  addEventListener('pointermove',function(e){cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';},{passive:true});
+  var hero=document.querySelector('.hero-inner');
+  var secs=['carta','casa','fotos','visita'].map(function(id){return document.getElementById(id)});
+  var dots=Array.prototype.slice.call(document.querySelectorAll('.dots a'));
+  function onScroll(){
+    var y=scrollY;
+    if(hero)hero.style.transform='translateY('+(y*.18)+'px)';
+    var cur2='carta';
+    secs.forEach(function(s){if(s&&s.getBoundingClientRect().top<innerHeight*.4)cur2=s.id});
+    dots.forEach(function(d){d.classList.toggle('on',d.dataset.sec===cur2)});
+  }
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
 </script>
 </body>
 </html>
