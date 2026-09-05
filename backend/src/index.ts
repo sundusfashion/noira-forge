@@ -261,6 +261,11 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   if (url.pathname === '/api/blog' && req.method === 'GET') {
     return json(200, { articles: marketing.list('published', 50) });
   }
+  if (url.pathname === '/api/debug/errors' && req.method === 'GET') {
+    const token = process.env.BACKUP_TOKEN;
+    if (token && url.searchParams.get('token') !== token) return json(401, { error: 'token required' });
+    return json(200, { uptimeSec: Math.round(process.uptime()), mem: process.memoryUsage(), errors: errorRing.slice(-20) });
+  }
   if (url.pathname === '/api/outreach' && req.method === 'GET') {
     if (!readLimiter.allow(ip)) return json(429, { error: 'slow down' });
     return json(200, { stats: marketing.outreachStats(), targets: marketing.targetStats(), recent: marketing.listOutreach(undefined, 30) });
@@ -570,8 +575,16 @@ wss.on('connection', (ws) => {
 });
 
 // --- crash policy: log, persist what matters, exit so the platform restarts us clean ---
+// In-memory error ring (survives until crash; DB may be wiped — this is our flight recorder).
+const errorRing: { t: number; where: string; msg: string }[] = [];
+function ring(where: string, err: any) {
+  errorRing.push({ t: Date.now(), where, msg: String(err?.stack || err?.message || err).slice(0, 800) });
+  if (errorRing.length > 50) errorRing.shift();
+  console.error(`[${where}]`, err?.stack || err);
+}
+
 function fatal(where: string, err: any) {
-  console.error(`[FATAL:${where}]`, err?.stack || err);
+  ring('FATAL:' + where, err);
   try { mem.store({ type: 'episodic', title: 'Crash event', content: String(err?.stack || err).slice(0, 500), metadata: { where }, importance: 0.95 }); } catch {}
   setTimeout(() => process.exit(1), 500); // Docker/Railway restart policy brings us back
 }
