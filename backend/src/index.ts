@@ -277,7 +277,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
     if (!rec) return json(404, { error: 'demo not found' });
     const owner = process.env.OUR_WHATSAPP || '';
     const waText = `Hola, he visto la web demo que me preparasteis para ${rec.business} y me interesa. Me contais mas?`;
-    return json(200, { business: rec.business, expiresAt: rec.expiresAt, ownerPhone: owner, waText });
+    return json(200, { business: rec.business, expiresAt: rec.expiresAt, ownerPhone: owner, waText, businessPhone: (rec.phone || '').replace(/\D/g, '') });
   }
   // Real business finder (OpenStreetMap, free): the agency's lead radar.
   if (url.pathname === '/api/leads' && req.method === 'GET') {

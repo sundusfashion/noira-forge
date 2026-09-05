@@ -57,9 +57,13 @@ export function buildDemoSite(spec: DemoSpec): string {
   const t = THEMES[spec.sector] || THEMES.negocio;
   const s = SECTIONS[spec.sector] || SECTIONS.negocio;
   const contact = [spec.address, spec.phone].filter(Boolean).join(' · ');
+  const bizWa = (spec.phone || '').replace(/\D/g, '');
+  const dishOrder = (d: string) => bizWa
+    ? ` <a data-wa-biz data-wa-text="Hola ${esc(spec.business)}, quiero pedir: ${d}. Soy " href="#" style="font-size:12px;color:var(--acc)">pedir →</a>`
+    : '';
   const photos = spec.photos.slice(0, 4);
   const gallery = photos.map((u, i) => `    <img loading="lazy" src="${u}" alt="Foto ${i + 1} de ${esc(spec.business)}">`).join('\n');
-  const items = s.items.map((d, i) => `      <div class="dish" style="animation-delay:${i * 70}ms"><div><h4>${d[0]}</h4><p>${d[1]}</p></div><div class="price">${d[2]}</div></div>`).join('\n');
+  const items = s.items.map((d, i) => `      <div class="dish" style="animation-delay:${i * 70}ms"><div><h4>${d[0]}</h4><p>${d[1]}</p>${dishOrder(d[0])}</div><div class="price">${d[2]}</div></div>`).join('\n');
   const videoBg = spec.video
     ? `<video autoplay muted loop playsinline poster="${photos[0] || ''}"><source src="${spec.video}" type="video/mp4"></video>`
     : `<canvas id="fx"></canvas>`;
@@ -176,13 +180,16 @@ ${gallery}
   <div class="k">SIN LLAMAR, SIN ESPERAR</div>
   <h2>Contacto</h2>
   <p class="sub">Escríbenos y te contestamos. Sin compromiso.</p>
-  <div class="book">
-    <form data-lead>
+    <div class="book">
+    <form data-lead data-wa-open data-wa-template="Hola {business}, soy {nombre} ({telefono}). Quiero: {personas} el {dia}.">
       <div><label>Nombre</label><input name="nombre" required placeholder="Tu nombre"></div>
       <div><label>Teléfono / WhatsApp</label><input name="telefono" required placeholder="600 123 456"></div>
-      <div><label>Cuéntanos</label><input name="personas" placeholder="Qué necesitas"></div>
-      <button class="btn" type="submit">Enviar</button>
-      <div class="ok" data-lead-ok>✓ ¡Recibido! Te contactamos enseguida.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label>Día</label><input name="dia" type="date"></div>
+        <div><label>Personas / Pedido</label><input name="personas" placeholder="2 personas"></div>
+      </div>
+      <button class="btn" type="submit">Enviar por WhatsApp</button>
+      <div class="ok" data-lead-ok>✓ ¡Enviado al WhatsApp del negocio! Te contestan enseguida.</div>
     </form>
     <div class="hours">
       <h3>${esc(spec.business)}</h3>
@@ -190,8 +197,8 @@ ${gallery}
     </div>
   </div>
 </section>
-<footer>${esc(spec.business)} · Demo de Noira · Visible 24h, luego se apaga sola</footer>
-<a class="wa" id="waFloat" href="#" aria-label="WhatsApp">✆</a>
+<footer>${esc(spec.business)}${contact ? ' · ' + esc(contact) : ''} · Demo de Noira · Visible 24h, luego se apaga sola</footer>
+<a class="wa" id="waFloat" data-wa-biz data-wa-text="Hola ${esc(spec.business)}, he visto vuestra web y quiero información." href="#" aria-label="WhatsApp">✆</a>
 <script src="/demo-assets/engine.js" data-slug="${spec.slug}"></script>
 <script>${fxScript}</script>
 </body>
