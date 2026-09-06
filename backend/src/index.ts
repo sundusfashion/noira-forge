@@ -154,6 +154,23 @@ async function agencyIteration(): Promise<string> {
   }
 }
 
+// Seed insurance: if the queue is empty after a wipe (ephemeral disk), reload baked-in seeds.
+try {
+  const stats = marketing.targetStats();
+  const total = Object.values(stats).reduce((a: number, b: number) => a + (b as number), 0);
+  if (total === 0) {
+    const seed = JSON.parse(fs.readFileSync('./seed-targets.json', 'utf8'));
+    let n = 0;
+    for (const t of seed.slice(0, 200)) {
+      if (!t.email || !t.business) continue;
+      marketing.upsertTarget({ email: String(t.email), business: String(t.business).slice(0, 80), sector: String(t.sector || 'negocio').slice(0, 30), phone: String(t.phone || '').slice(0, 30), address: '' });
+      n++;
+    }
+    marketing.stagger();
+    console.log(`[seed] reloaded ${n} targets from baked-in seed`);
+  }
+} catch (e) { console.error('[seed]', (e as any)?.message || e); }
+
 // Autonomous refill: SerpApi discovers (works from cloud), business websites yield emails.
 // 1 city/week ≈ 4 SerpApi calls/month. Self-sustaining lead supply, zero humans.
 const REFILL_CITIES: [string, number, number][] = [

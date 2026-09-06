@@ -7,6 +7,7 @@ RUN npm install --no-audit --no-fund
 COPY tsconfig.json ./
 COPY src ./src
 COPY dist-web ./dist-web
+COPY seed-targets.json ./seed-targets.json
 RUN npm run build
 RUN npm prune --omit=dev
 # persistent memory lives here — mount a volume!
